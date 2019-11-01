@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="Console">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		
+	</Appenders>
+	<Loggers>
+		<Logger name="com.carrier.smpp" level="debug" additivity="true">
+			<appender-ref ref="Console" level="debug" />
+		</Logger>
+		
+		<Root level="debug" additivity="true">
+			<AppenderRef ref="Console" />
+			
+		</Root>
+	</Loggers>
+	
+</Configuration>
