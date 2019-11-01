@@ -3,7 +3,7 @@ package com.carrier.smpp.demo.server;
 import com.carrier.smpp.server.ConfigurationLoader;
 import com.cloudhopper.smpp.SmppServerConfiguration;
 
-public class SmppSrvConfigLoader implements ConfigurationLoader<SmppServerConfiguration> {
+public class SmppSrvConfigLoaderExple implements ConfigurationLoader<SmppServerConfiguration> {
 
 	@Override
 	public SmppServerConfiguration loadConfig() {
