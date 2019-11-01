@@ -14,7 +14,7 @@ public class CarrierSmppServer implements CarrierSmppEntity{
 	private final Logger logger = LogManager.getLogger(CarrierSmppServer.class.getName());
 	private ScheduledThreadPoolExecutor monitorExecutor;
 	private ThreadPoolExecutor executor;
-	private final ConfigurationLoader<SmppServerConfiguration> configLoader;
+	private ConfigurationLoader<SmppServerConfiguration> configLoader;
 	private DefaultSmppServer defaultSmppServer = null;
 	private CarrierSmppServerHandler carrierSmppServerHandler;
 	public CarrierSmppServer(ThreadPoolExecutor executor, ScheduledThreadPoolExecutor monitorExecutor
@@ -23,6 +23,14 @@ public class CarrierSmppServer implements CarrierSmppEntity{
 		this.monitorExecutor = monitorExecutor;
 		this.configLoader = configLoader;
 		this.carrierSmppServerHandler = carrierSmppServerHandler;
+	}
+
+	public CarrierSmppServer(ThreadPoolExecutor executor, ScheduledThreadPoolExecutor monitorExecutor,
+			CarrierSmppServerHandler carrierSmppServerHandler) {
+		this.executor = executor;
+		this.monitorExecutor = monitorExecutor;
+		this.carrierSmppServerHandler = carrierSmppServerHandler;
+		this.configLoader = SmppServerConfiguration::new;
 	}
 
 	@Override
