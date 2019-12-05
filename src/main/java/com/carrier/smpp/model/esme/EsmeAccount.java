@@ -1,20 +1,20 @@
 package com.carrier.smpp.model.esme;
 
 
-public class EsmeSessionConfigParams {
+public class EsmeAccount {
 	private String systemId;
 	private String password;
 	private String host;
 	
 	
 	
-	public EsmeSessionConfigParams(String systemId, String password) {
+	public EsmeAccount(String systemId, String password) {
 		super();
 		this.systemId = systemId;
 		this.password = password;
 	}
 
-	public EsmeSessionConfigParams() {} 
+	public EsmeAccount() {} 
 	
 	public String getSystemId() {
 		return systemId;

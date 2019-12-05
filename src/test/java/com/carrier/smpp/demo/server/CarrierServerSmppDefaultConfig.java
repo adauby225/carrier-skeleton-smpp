@@ -22,7 +22,7 @@ public class CarrierServerSmppDefaultConfig {
 		List<ConfigParameter>parameters = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		DefaultEsmeBindRequestHandler defaultEsmeBindRequestHandler = new DefaultEsmeBindRequestHandler(
 				parameters,new ConfigParamsRepositoryExple());
-		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(defaultEsmeBindRequestHandler);
+		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(defaultEsmeBindRequestHandler,new EsmeAccountRepositoryExple());
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, carrierSmppServerHandler);
 		List<CarrierSmppEntity>carrierEntities = new ArrayList<>();

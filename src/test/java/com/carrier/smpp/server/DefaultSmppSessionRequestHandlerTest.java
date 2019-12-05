@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.carrier.smpp.model.esme.ConfigParamsRepository;
-import com.carrier.smpp.model.esme.EsmeSessionConfigParams;
+import com.carrier.smpp.model.esme.EsmeAccountRepository;
+import com.carrier.smpp.model.esme.EsmeAccount;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
@@ -23,7 +23,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 	private ConfigParameter systemIdParameter = new  ConfigParameter() {
 		
 		@Override
-		public int check(SmppSessionConfiguration sessionConfiguration, EsmeSessionConfigParams configParams) {
+		public int check(SmppSessionConfiguration sessionConfiguration, EsmeAccount configParams) {
 			String systemId = sessionConfiguration.getSystemId();
 			if(!systemId.equals(configParams.getSystemId()))
 				return STATUS_INVSYSID;
@@ -32,7 +32,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 	};
 	private ConfigParameter passwordParameter = new ConfigParameter() {
 		@Override
-		public int check(SmppSessionConfiguration sessionConfiguration, EsmeSessionConfigParams configParams) {
+		public int check(SmppSessionConfiguration sessionConfiguration, EsmeAccount configParams) {
 			String password = sessionConfiguration.getPassword();
 			if(!password.equals(configParams.getPassword()))
 				return SmppConstants.STATUS_INVPASWD;
@@ -40,7 +40,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 		}
 	};
 	
-	ConfigParamsRepository configParamsRepository = ()-> new EsmeSessionConfigParams(SYSTEM_ID, PASSWORD);
+	EsmeAccountRepository configParamsRepository = ()-> new EsmeAccount(SYSTEM_ID, PASSWORD);
 	private List<ConfigParameter>parameters = Arrays.asList(systemIdParameter,passwordParameter);
 	
 	@Test

@@ -3,14 +3,14 @@ package com.carrier.smpp.demo.server;
 import static com.carrier.smpp.demo.server.DemoConstants.PASSWORD;
 import static com.carrier.smpp.demo.server.DemoConstants.SYSTEM_ID;
 
-import com.carrier.smpp.model.esme.ConfigParamsRepository;
-import com.carrier.smpp.model.esme.EsmeSessionConfigParams;
+import com.carrier.smpp.model.esme.EsmeAccountRepository;
+import com.carrier.smpp.model.esme.EsmeAccount;
 
-public class ConfigParamsRepositoryExple implements ConfigParamsRepository {
+public class ConfigParamsRepositoryExple implements EsmeAccountRepository {
 
 	@Override
-	public EsmeSessionConfigParams findBySystemId() {
-		return new EsmeSessionConfigParams(SYSTEM_ID, PASSWORD);
+	public EsmeAccount findBySystemId() {
+		return new EsmeAccount(SYSTEM_ID, PASSWORD);
 	}
 
 }

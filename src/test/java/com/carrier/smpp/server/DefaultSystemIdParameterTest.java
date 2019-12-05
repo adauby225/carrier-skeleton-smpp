@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.carrier.smpp.model.esme.EsmeSessionConfigParams;
+import com.carrier.smpp.model.esme.EsmeAccount;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class DefaultSystemIdParameterTest {
@@ -18,8 +18,8 @@ public class DefaultSystemIdParameterTest {
 		DefaultSystemIdParameter defaultSystemIdParameter =new DefaultSystemIdParameter();
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(
 				TRANSCEIVER, SYSTEM_ID, "secret");
-		EsmeSessionConfigParams configParams = new EsmeSessionConfigParams(SYSTEM_ID,"secret");
-		assertEquals(STATUS_OK, defaultSystemIdParameter.check(sessionConfiguration, configParams)); 
+		EsmeAccount account = new EsmeAccount(SYSTEM_ID,"secret");
+		assertEquals(STATUS_OK, defaultSystemIdParameter.check(sessionConfiguration, account)); 
 	}
 	
 	@Test
@@ -27,7 +27,7 @@ public class DefaultSystemIdParameterTest {
 		DefaultSystemIdParameter defaultSystemIdParameter =new DefaultSystemIdParameter();
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(
 				TRANSCEIVER, "invalid", "secret");
-		EsmeSessionConfigParams configParams = new EsmeSessionConfigParams(SYSTEM_ID, "secret");
-		assertEquals(STATUS_INVSYSID, defaultSystemIdParameter.check(sessionConfiguration, configParams));
+		EsmeAccount account = new EsmeAccount(SYSTEM_ID, "secret");
+		assertEquals(STATUS_INVSYSID, defaultSystemIdParameter.check(sessionConfiguration, account));
 	}
 }

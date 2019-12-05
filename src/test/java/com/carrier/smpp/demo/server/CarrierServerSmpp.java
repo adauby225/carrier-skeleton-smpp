@@ -16,15 +16,13 @@ public class CarrierServerSmpp {
 	public static void main(String[] args) {
 		
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
-				new EsmeBindRequestHandlerExple());
+				new EsmeBindRequestHandlerExple(), new EsmeAccountRepositoryExple());
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoaderExple(), carrierSmppServerHandler);
 		List<CarrierSmppEntity>carrierEntities = new ArrayList<>();
 		carrierEntities.add(smppServer);
 		Carrier carrier = new Carrier(carrierEntities);
 		carrier.startEntities();
-		
-		
 	}
 
 }

@@ -3,13 +3,13 @@ package com.carrier.smpp.server;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_INVSYSID;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 
-import com.carrier.smpp.model.esme.EsmeSessionConfigParams;
+import com.carrier.smpp.model.esme.EsmeAccount;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class DefaultSystemIdParameter implements ConfigParameter {
 
 	@Override
-	public int check(SmppSessionConfiguration sessionConfiguration, EsmeSessionConfigParams configParams) {
+	public int check(SmppSessionConfiguration sessionConfiguration, EsmeAccount configParams) {
 		String systemId = sessionConfiguration.getSystemId();
 		if(!systemId.equals(configParams.getSystemId()))
 			return STATUS_INVSYSID;
