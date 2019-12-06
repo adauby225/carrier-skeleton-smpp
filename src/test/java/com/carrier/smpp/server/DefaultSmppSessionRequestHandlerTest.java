@@ -40,7 +40,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 		}
 	};
 	
-	EsmeAccountRepository configParamsRepository = ()-> new EsmeAccount(SYSTEM_ID, PASSWORD);
+	EsmeAccountRepository configParamsRepository = (systemId)-> new EsmeAccount(SYSTEM_ID, PASSWORD);
 	private List<ConfigParameter>parameters = Arrays.asList(systemIdParameter,passwordParameter);
 	
 	@Test

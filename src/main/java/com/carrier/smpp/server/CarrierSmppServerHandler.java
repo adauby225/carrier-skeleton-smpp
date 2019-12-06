@@ -4,6 +4,7 @@ import static com.cloudhopper.smpp.SmppConstants.STATUS_MESSAGE_MAP;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 
 import com.carrier.smpp.model.esme.EsmeAccount;
+import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.cloudhopper.smpp.SmppServerHandler;
 import com.cloudhopper.smpp.SmppServerSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
@@ -43,7 +44,8 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 
 	@Override
 	public void sessionDestroyed(Long sessionId, SmppServerSession session) {
-		
+		session.destroy();
+		sessionManager.removeSession(sessionId);
 	}
 
 }

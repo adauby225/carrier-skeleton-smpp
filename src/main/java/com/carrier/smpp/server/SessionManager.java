@@ -22,4 +22,8 @@ public final class SessionManager {
 		
 		return sessions.size();
 	}
+
+	public EsmeSmppSession removeSession(Long sessionId) {
+		return sessions.remove(sessionId);
+	}
 }

@@ -10,16 +10,16 @@ import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class DefaultEsmeBindRequestHandler implements BindRequestHandler {
 	private final List<ConfigParameter>parameters;
-	private final EsmeAccountRepository configParamsRepository;
-	public DefaultEsmeBindRequestHandler(List<ConfigParameter> parameters, EsmeAccountRepository configParamsRepository) {
+	private final EsmeAccountRepository esmeAccountRepository;
+	public DefaultEsmeBindRequestHandler(List<ConfigParameter> parameters, EsmeAccountRepository esmeAccountRepository) {
 		super();
 		this.parameters = parameters;
-		this.configParamsRepository = configParamsRepository;
+		this.esmeAccountRepository = esmeAccountRepository;
 	}
 
 	@Override
 	public int handleRequest(SmppSessionConfiguration sessionConfiguration) {
-		EsmeAccount configParams = configParamsRepository.findBySystemId();
+		EsmeAccount configParams = esmeAccountRepository.findBySystemId(sessionConfiguration.getSystemId());
 		for(ConfigParameter param : parameters) {
 			int status = param.check(sessionConfiguration,configParams); 
 			if(status !=STATUS_OK)

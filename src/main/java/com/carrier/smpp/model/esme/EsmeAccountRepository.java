@@ -2,6 +2,6 @@ package com.carrier.smpp.model.esme;
 
 public interface EsmeAccountRepository {
 
-	EsmeAccount findBySystemId();
+	EsmeAccount findBySystemId(String systemId);
 
 }

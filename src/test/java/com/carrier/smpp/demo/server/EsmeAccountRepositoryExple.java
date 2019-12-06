@@ -1,7 +1,7 @@
 package com.carrier.smpp.demo.server;
 
 import com.carrier.smpp.model.esme.EsmeAccount;
-import com.carrier.smpp.server.EsmeAccountRepository;
+import com.carrier.smpp.model.esme.EsmeAccountRepository;
 
 public class EsmeAccountRepositoryExple implements EsmeAccountRepository {
 
