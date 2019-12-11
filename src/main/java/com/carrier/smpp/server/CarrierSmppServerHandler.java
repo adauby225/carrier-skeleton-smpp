@@ -3,6 +3,9 @@ package com.carrier.smpp.server;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_MESSAGE_MAP;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 
+import java.util.Map;
+
+import com.carrier.smpp.esme.request.EsmeRequestHandler;
 import com.carrier.smpp.model.esme.EsmeAccount;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.cloudhopper.smpp.SmppServerHandler;
@@ -14,13 +17,15 @@ import com.cloudhopper.smpp.type.SmppProcessingException;
 
 public class CarrierSmppServerHandler implements SmppServerHandler{
 	private final BindRequestHandler bindRequestHandler;
-	private final EsmeAccountRepository esmeAccountRepository;
+	private final EsmeAccountRepository accountRepository;
 	private SessionManager sessionManager = SessionManager.getInstance();
+	private final Map<Integer,EsmeRequestHandler>requestHandlers;
 	public CarrierSmppServerHandler(BindRequestHandler bindRequestHandler
-			,EsmeAccountRepository esmeAccountRepository) {
+			,EsmeAccountRepository accountRepository,Map<Integer,EsmeRequestHandler>requestHandlers) {
 		super();
 		this.bindRequestHandler = bindRequestHandler;
-		this.esmeAccountRepository = esmeAccountRepository;
+		this.accountRepository = accountRepository;
+		this.requestHandlers = requestHandlers;
 	}
 
 	@Override
@@ -36,10 +41,10 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 	public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse)
 			throws SmppProcessingException {
 		SmppSessionConfiguration config = session.getConfiguration();
-		EsmeAccount account = esmeAccountRepository.findBySystemId(config.getSystemId());
-		EsmeSmppSession esmeSession  =new EsmeSmppSession(session,account);
-		sessionManager.addNewSession(sessionId,esmeSession);
-		session.serverReady(new EsmeSmppSessionHandler(sessionId,esmeSession));
+		EsmeAccount account = accountRepository.findBySystemId(config.getSystemId());
+		EsmeSmppSession newEsmeSession  = new EsmeSmppSession(session,account);
+		session.serverReady(new EsmeSmppSessionHandler(sessionId,newEsmeSession,requestHandlers));
+		sessionManager.addNewSession(sessionId,newEsmeSession);
 	}
 
 	@Override

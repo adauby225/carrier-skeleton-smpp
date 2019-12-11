@@ -48,4 +48,9 @@ public class CarrierSmppServer implements CarrierSmppEntity{
 		}
 	}
 
+	@Override
+	public void stop() {
+		defaultSmppServer.destroy();
+	}
+
 }
