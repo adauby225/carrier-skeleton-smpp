@@ -26,4 +26,8 @@ public final class SessionManager {
 	public EsmeSmppSession removeSession(Long sessionId) {
 		return sessions.remove(sessionId);
 	}
+
+	public ConcurrentMap<Long,EsmeSmppSession> getSessions() {
+		return sessions;
+	}
 }
