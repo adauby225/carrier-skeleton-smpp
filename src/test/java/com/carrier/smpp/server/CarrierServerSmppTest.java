@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carrier.smpp.esme.request.EsmeRequestHandler;
+import com.carrier.smpp.esme.response.EsmeResponseHandler;
 import com.carrier.smpp.model.esme.EsmeAccount;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.cloudhopper.commons.charset.CharsetUtil;
@@ -54,7 +55,8 @@ public class CarrierServerSmppTest {
 		}
 	}
 	@Before
-	public void resetSessionManager() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void resetSessionManager() throws NoSuchFieldException, SecurityException, IllegalArgumentException
+	, IllegalAccessException {
 		Field instance = SessionManager.class.getDeclaredField("instance");
 		instance.setAccessible(true);
 		instance.set(null, null);
@@ -62,10 +64,12 @@ public class CarrierServerSmppTest {
 
 	@Test
 	public void testSessionOk() throws Exception{
+		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
+		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),null);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -90,11 +94,14 @@ public class CarrierServerSmppTest {
 	}
 
 	@Test
-	public void testInvalidSystemId() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException {
+	public void testInvalidSystemId() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
+	, HandlerException {
+		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
+		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount("WRONG_SYS_ID", PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),null);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -113,11 +120,14 @@ public class CarrierServerSmppTest {
 	}
 	
 	@Test
-	public void testInvalidPassword() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException {
+	public void testInvalidPassword() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
+	, HandlerException {
+		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
+		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, "bad_passwd")))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),null);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -136,16 +146,17 @@ public class CarrierServerSmppTest {
 	}
 	
 	@Test
-	public void testHandleSubmitSm() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException, SmppInvalidArgumentException, RecoverablePduException {
-		
-		Map<Integer, EsmeRequestHandler>handlers = new HashMap<>();
-		handlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
-		//handlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandler());
+	public void testHandleSubmitSm() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException
+	, InterruptedException, SmppInvalidArgumentException, RecoverablePduException, HandlerException {
+	
+		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
+		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
+		requestHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
 		
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),handlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -166,15 +177,17 @@ public class CarrierServerSmppTest {
 	}
 	
 	@Test
-	public void testHandleUnbind() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException, SmppInvalidArgumentException, RecoverablePduException {
-		Map<Integer, EsmeRequestHandler>handlers = new HashMap<>();
+	public void testHandleUnbind() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
+	, SmppInvalidArgumentException, RecoverablePduException, HandlerException {
+		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
+		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
 		//handlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
-		handlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandler());
+		requestHandlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandler());
 		
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),handlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
