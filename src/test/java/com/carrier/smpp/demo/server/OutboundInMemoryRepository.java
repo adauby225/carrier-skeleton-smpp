@@ -2,12 +2,16 @@ package com.carrier.smpp.demo.server;
 
 import java.util.List;
 
-import com.carrier.smpp.server.CarrierSmppEntity;
+import com.carrier.smpp.outbound.client.CarrierSmppOutbound;
 
 public class OutboundInMemoryRepository implements ConnectorRepository{
-	private 
-	public List<CarrierSmppEntity> findConnectors() {
+
+	@Override
+	public List<CarrierSmppOutbound> findOutboundClients() {
+		
 		return null;
 	}
+	 
+	
 
 }
