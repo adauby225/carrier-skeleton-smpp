@@ -6,11 +6,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.carrier.smpp.CarrierSmppInstance;
 import com.cloudhopper.smpp.SmppServerConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppServer;
 import com.cloudhopper.smpp.type.SmppChannelException;
 
-public class CarrierSmppServer implements CarrierSmppEntity{
+public class CarrierSmppServer implements CarrierSmppInstance{
 	private final Logger logger = LogManager.getLogger(CarrierSmppServer.class.getName());
 	private ScheduledThreadPoolExecutor monitorExecutor;
 	private ThreadPoolExecutor executor;
