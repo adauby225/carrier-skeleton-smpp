@@ -225,8 +225,8 @@ public class CarrierServerSmppTest {
 		configuration.setType(TRANSCEIVER);
 		configuration.setHost("localhost");
 		configuration.setPort(PORT);
-		configuration.setConnectTimeout(100);
-		configuration.setBindTimeout(100);
+		configuration.setConnectTimeout(1000);
+		configuration.setBindTimeout(1000);
 		configuration.setSystemId(SYSTEMID);
 		configuration.setPassword(PASSWD);
 		configuration.getLoggingOptions().setLogBytes(true);

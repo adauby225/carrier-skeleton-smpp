@@ -43,10 +43,6 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	@Override
 	public void fireChannelUnexpectedlyClosed() {
 		logger.error(bindType +": unexpected close occurred...");
-		closeChannels();
-	}
-
-	public void closeChannels() {
 		allRequestResponseReceivedSignal.countDown();
 	}
 

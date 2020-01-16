@@ -12,6 +12,7 @@ sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 sourceSets{
@@ -25,10 +26,10 @@ configurations{
 }
 
 dependencies {
-	implementation group: 'com.cloudhopper', name: 'ch-smpp', version: '5.0.9'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.12.1', ext: 'pom'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
+	implementation 'com.github.Adauby:cloudhopper-smpp:04a3959'
 	
 	testImplementation group: 'junit', name: 'junit', version: '4.12'
 	intTestImplementation group: 'junit', name: 'junit', version: '4.12'

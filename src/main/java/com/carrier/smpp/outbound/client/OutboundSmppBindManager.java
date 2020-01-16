@@ -8,8 +8,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.carrier.smpp.service.ServiceExecutor;
 import com.cloudhopper.smpp.SmppBindType;
+import com.cloudhopper.smpp.SmppSessionConfiguration;
 
-public class OutboundSmppBindManager implements Connection<SmppOutboundSettings> {
+public class OutboundSmppBindManager implements Connection<ConnectorConfiguration> {
 	private static AtomicLong bindIds = new  AtomicLong(1);
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
@@ -19,12 +20,23 @@ public class OutboundSmppBindManager implements Connection<SmppOutboundSettings>
 	}
 	
 	@Override
-	public void establishBind(SmppOutboundSettings settings,PduQueue pduQueue, SmppBindType bindType) {
+	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType bindType) {
 		SharedClientBootstrap sharedClientBootStrap = SharedClientBootstrap.getInstance();
+		SmppSessionConfiguration config = getSessionConfig(settings, bindType);
 		CarrierSmppBind bind =new CarrierSmppBind(bindIds.getAndIncrement()
-				,sharedClientBootStrap.getClientBootstrap(), pduQueue, settings);
+				,sharedClientBootStrap.getClientBootstrap(), pduQueue, config);
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
+	}
+	
+	public SmppSessionConfiguration getSessionConfig(ConnectorConfiguration connectorConfig,SmppBindType type) {
+		SmppSessionConfiguration config = new SmppSessionConfiguration(type, connectorConfig.getLogin(), connectorConfig.getPassword());
+		config.setHost(connectorConfig.getRemoteHost());
+		config.setPort(connectorConfig.getRemotePort());
+		config.setWindowSize(connectorConfig.getWindowSize());
+		if(!connectorConfig.isHostEmpty())
+			config.setLocalAddress(connectorConfig.getHost());
+		return config;
 	}
 
 	public void unbind() {
@@ -32,7 +44,6 @@ public class OutboundSmppBindManager implements Connection<SmppOutboundSettings>
 			bind.unbind();
 			bind.setUnbound(true);
 		}
-		//startSendingSignal.countDown();
 	}
 
 	public List<CarrierSmppBind> getListOfBinds() {

@@ -9,18 +9,18 @@ import com.cloudhopper.smpp.SmppBindType;
 
 public class CarrierSmppConnector {
 	
-	private SmppOutboundSettings settings;
+	private ConnectorConfiguration settings;
 	private BindTypes bindTypes;
 	private OutboundSmppBindManager bindManager;
 	private PduQueue pduQueue = new PduQueue();
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
-	public CarrierSmppConnector(SmppOutboundSettings settings, BindTypes bindTypes, ServiceExecutor serviceExecutor) {
+	public CarrierSmppConnector(ConnectorConfiguration settings, BindTypes bindTypes, ServiceExecutor serviceExecutor) {
 		this.settings = settings;
 		this.bindTypes = bindTypes;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor);
 	}
 	
-	public CarrierSmppConnector(SmppOutboundSettings settings, ServiceExecutor serviceExecutor) {
+	public CarrierSmppConnector(ConnectorConfiguration settings, ServiceExecutor serviceExecutor) {
 		this.settings = settings;
 		this.bindTypes = new BindTypes();
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor);
