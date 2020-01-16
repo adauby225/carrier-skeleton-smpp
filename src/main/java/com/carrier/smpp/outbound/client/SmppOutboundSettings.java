@@ -18,14 +18,16 @@ public class SmppOutboundSettings extends SmppSessionConfiguration{
 	}
 	
 	public SmppOutboundSettings(Npi npi, Ton ton, long enquireLinkInterval, int throughput) {
-		
+		super();
 		this.npi = npi;
 		this.ton = ton;
 		this.enquireLinkInterval = enquireLinkInterval;
 		this.throughput = throughput;
 	}
-	public SmppOutboundSettings(SmppBindType type, String systemId, String password) {
-		super(type, systemId, password);
+	public SmppOutboundSettings(String systemId, String password) {
+		super();
+		setSystemId(systemId);
+		setPassword(password);
 	}
 
 	public Npi getNpi() {
