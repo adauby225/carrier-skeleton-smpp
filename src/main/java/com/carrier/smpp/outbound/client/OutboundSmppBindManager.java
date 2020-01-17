@@ -1,5 +1,7 @@
 package com.carrier.smpp.outbound.client;
 
+import static com.carrier.util.Values.DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT;
+import static com.carrier.util.Values.DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -14,17 +16,22 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private static AtomicLong bindIds = new  AtomicLong(1);
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
-	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor) {
+	private final RequestSender requestSender;
+	private final RequestSender enquireLinkSender;
+	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
+			, RequestSender requestSender, RequestSender enquireLinkSender) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
+		this.requestSender = requestSender;
+		this.enquireLinkSender = enquireLinkSender;
+		
 	}
 	
 	@Override
-	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType bindType) {
-		SharedClientBootstrap sharedClientBootStrap = SharedClientBootstrap.getInstance();
+	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType bindType,int tps) {
 		SmppSessionConfiguration config = getSessionConfig(settings, bindType);
-		CarrierSmppBind bind =new CarrierSmppBind(bindIds.getAndIncrement()
-				,sharedClientBootStrap.getClientBootstrap(), pduQueue, config);
+		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config
+				, requestSender,enquireLinkSender, settings.getNpi(), settings.getTon(), tps);
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
 	}
@@ -34,6 +41,8 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		config.setHost(connectorConfig.getRemoteHost());
 		config.setPort(connectorConfig.getRemotePort());
 		config.setWindowSize(connectorConfig.getWindowSize());
+		config.setRequestExpiryTimeout(DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT);
+        config.setWindowMonitorInterval(DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT);
 		if(!connectorConfig.isHostEmpty())
 			config.setLocalAddress(connectorConfig.getHost());
 		return config;
@@ -48,6 +57,12 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 
 	public List<CarrierSmppBind> getListOfBinds() {
 		return binds.values().stream().map(CarrierSmppBind::self).collect(toList());
+	}
+
+	@Override
+	public void establishBind(ConnectorConfiguration t, PduQueue pduQueue, int tps) {
+		
+		
 	}
 
 

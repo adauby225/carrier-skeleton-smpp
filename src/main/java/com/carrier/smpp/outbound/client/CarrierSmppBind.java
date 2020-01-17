@@ -1,6 +1,7 @@
 package com.carrier.smpp.outbound.client;
 
 import static com.carrier.util.Messages.UNBINDING;
+import static com.carrier.util.Values.DEFAULT_ENQUIRE_LINK_INTERVAL;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,24 +20,33 @@ public class CarrierSmppBind implements Runnable{
 	private Logger logger = LogManager.getLogger(CarrierSmppBind.class);
 	private long timeToSleep = 100;
 	private Long id;
-	private DefaultSmppClient clientBootstrap;
 	private PduQueue pduQueue;
 	private SmppSessionConfiguration config;
 	private boolean unbound = false;
 	private SmppSession session = null;
-	
+	private RequestSender requestSender;
+	private Npi npi;
+	private Ton ton;
+	private int tps;
+	private RequestSender enquireLinkSender;
+	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
 
-	public CarrierSmppBind(Long id,DefaultSmppClient clientBootstrap, PduQueue pduQueue
-			, SmppSessionConfiguration config) {
-		this.id = id;
-		this.clientBootstrap = clientBootstrap;
+	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
+			,RequestSender enquireLinkSender,Npi npi,Ton ton,int tps) {
+		 
 		this.pduQueue = pduQueue;
 		this.config = config;
+		this.requestSender =requestSender;
+		this.enquireLinkSender = enquireLinkSender;
+		this.npi = npi;
+		this.ton = ton;
+		this.tps = tps;
 	}
 
 	public Long getId() {
 		return id;
 	}
+	
 
 	@Override
 	public void run() {
@@ -44,6 +54,8 @@ public class CarrierSmppBind implements Runnable{
 		while(!unbound) {
 			try {
 				connect();
+				requestSender.send(session, pduQueue, pduQueue.size());
+				enquireLinkSender.send(session,enquireLinkInterval);
 				timeToSleep = 100;
 			} catch (SmppTimeoutException e) {
 				logger.info(e);
@@ -56,7 +68,7 @@ public class CarrierSmppBind implements Runnable{
 
 			} catch (SmppChannelException |  UnrecoverablePduException  e) {
 				logger.warn(e);
-				//SmppSessionUtil.close(session);
+				SmppSessionUtil.close(session);
 				/*
 				 * Wait 30 seconds before trying again...
 				 */
@@ -75,6 +87,8 @@ public class CarrierSmppBind implements Runnable{
 	SmppChannelException, UnrecoverablePduException, InterruptedException {
 		DefaultSmppSessionHandler sessionHandler=null;
 		if (!unbound &&(this.session == null || this.session.isClosed())) {
+			SharedClientBootstrap sharedClientBootstrap = SharedClientBootstrap.getInstance();
+			DefaultSmppClient clientBootstrap = sharedClientBootstrap.getClientBootstrap();
 			sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue);
 			this.session = clientBootstrap.bind(config, sessionHandler);
 		}
@@ -99,6 +113,30 @@ public class CarrierSmppBind implements Runnable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Npi getNpi() {
+		return npi;
+	}
+
+	public void setNpi(Npi npi) {
+		this.npi = npi;
+	}
+
+	public Ton getTon() {
+		return ton;
+	}
+
+	public void setTon(Ton ton) {
+		this.ton = ton;
+	}
+
+	public int getTps() {
+		return tps;
+	}
+
+	public void setTps(int tps) {
+		this.tps = tps;
 	}
 
 	public void unbind() {

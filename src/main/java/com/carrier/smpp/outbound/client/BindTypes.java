@@ -32,6 +32,10 @@ public class BindTypes {
 	public void setReceivers(int receivers) {
 		this.receivers = receivers;
 	}
+
+	public int total() {
+		return tranceivers + receivers + transmitters;
+	}
 	
 	
 
