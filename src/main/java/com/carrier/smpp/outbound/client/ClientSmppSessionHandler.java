@@ -29,15 +29,15 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 
 	@Override
 	public PduResponse firePduRequestReceived(PduRequest pduRequest) {
-		
-		
-		return pduRequest.createResponse();
+		PduResponse resp = pduRequest.createResponse();
+				logger.info(resp);
+		return resp;
 	
 	}
 
 	@Override
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
-		
+		logger.info(pduAsyncResponse.getResponse());
 	}
 
 	@Override
