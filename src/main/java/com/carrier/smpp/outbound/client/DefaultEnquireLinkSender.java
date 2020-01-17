@@ -1,0 +1,63 @@
+package com.carrier.smpp.outbound.client;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.carrier.util.Messages;
+import com.cloudhopper.smpp.SmppSession;
+import com.cloudhopper.smpp.pdu.EnquireLink;
+import com.cloudhopper.smpp.pdu.EnquireLinkResp;
+import com.cloudhopper.smpp.type.RecoverablePduException;
+import com.cloudhopper.smpp.type.SmppChannelException;
+import com.cloudhopper.smpp.type.SmppTimeoutException;
+import com.cloudhopper.smpp.type.UnrecoverablePduException;
+import com.cloudhopper.smpp.util.SmppSessionUtil;
+
+public class DefaultEnquireLinkSender implements RequestSender {
+	private LocalDateTime lastSent;
+	private boolean firstSent=true;
+	private Logger logger = LogManager.getLogger(DefaultEnquireLinkSender.class);
+	
+	@Override
+	public void send(SmppSession session, PduQueue pduQueue, int tps) throws InterruptedException {
+		throw new UnsupportedOperationException(Messages.UNAUTHORIZED_OPERATION);
+	}
+
+	public static long calculateDurationInMilliSecond(LocalDateTime from, LocalDateTime to) {
+		return ChronoUnit.MILLIS.between(from, to);
+	}
+	@Override
+	public void send(SmppSession session,int requestInterval) throws InterruptedException {
+		if(session!=null && session.isBound()) {
+			try {
+				if(firstSent) {
+					sendEnquireLink(session);
+					firstSent = false;
+				}else if(calculateDurationInMilliSecond(lastSent, LocalDateTime.now())>=requestInterval){
+					sendEnquireLink(session);
+				}
+			}catch(UnrecoverablePduException  | SmppChannelException e) {
+				logger.error(e);
+				SmppSessionUtil.close(session);
+			}
+		}
+	}
+	
+	private void sendEnquireLink(SmppSession session) throws UnrecoverablePduException, SmppChannelException, InterruptedException{
+		EnquireLink enquireLink = new EnquireLink();
+		logger.info(enquireLink);
+		lastSent = LocalDateTime.now();
+		try {
+			logger.info(session.getConfiguration().getRequestExpiryTimeout());
+			EnquireLinkResp enquireLinkResp = session.enquireLink(enquireLink, 
+					session.getConfiguration().getRequestExpiryTimeout());
+			logger.info(enquireLinkResp);
+		}catch(SmppTimeoutException | RecoverablePduException e) {
+			logger.warn(e);
+		}
+	}
+
+}

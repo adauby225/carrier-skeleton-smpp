@@ -1,5 +1,6 @@
 package com.carrier.smpp.demo.client;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +11,7 @@ import com.carrier.smpp.outbound.client.CarrierSmppBind;
 import com.carrier.smpp.outbound.client.CarrierSmppConnector;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
 import com.carrier.smpp.outbound.client.ConnectorConfiguration;
+import com.carrier.smpp.outbound.client.DefaultEnquireLinkSender;
 import com.carrier.smpp.outbound.client.MaxRequestPerSecond;
 import com.carrier.smpp.outbound.client.MaxTpsDefault;
 import com.carrier.smpp.outbound.client.PduQueue;
@@ -31,7 +33,7 @@ import com.cloudhopper.smpp.util.SmppSessionUtil;
 
 public class SmppClient {
 	private static final Logger logger = LogManager.getLogger(SmppClient.class);
-	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException {
+	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
 		
 		ConnectorConfiguration settings = new ConnectorConfiguration("sysId", "passwd", "127.0.0.1", 34567);
 		
@@ -44,7 +46,7 @@ public class SmppClient {
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		MaxTpsDefault maxTps = new MaxTpsDefault();
         CarrierSmppConnector connector = new CarrierSmppConnector(settings,bindTypes,BindExecutor::runBind
-        		,pduRequestSender,maxTps);
+        		,pduRequestSender,new DefaultEnquireLinkSender(),maxTps);
         connector.connect();
         String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
         byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
@@ -64,7 +66,8 @@ public class SmppClient {
         	logger.info("bind is bound: " + true);
         }
         
-        Thread.sleep(40000);
+        logger.info("Press any key to unbind and close sessions");
+        System.in.read();
         
         connector.disconnect();
         BindExecutor.stopAll();
@@ -120,4 +123,15 @@ class PduRequestSender implements RequestSender{
 		return type.equals(SmppBindType.TRANSCEIVER)||type.equals(SmppBindType.TRANSMITTER);
 	}
 
+	@Override
+	public void send(SmppSession session, int requestInterval) throws InterruptedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	
+	
+
 }
+

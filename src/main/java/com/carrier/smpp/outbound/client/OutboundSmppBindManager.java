@@ -17,19 +17,21 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
+	private final RequestSender enquireLinkSender;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
-			, RequestSender requestSender) {
+			, RequestSender requestSender, RequestSender enquireLinkSender) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
 		this.requestSender = requestSender;
+		this.enquireLinkSender = enquireLinkSender;
 		
 	}
 	
 	@Override
 	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType bindType,int tps) {
 		SmppSessionConfiguration config = getSessionConfig(settings, bindType);
-		CarrierSmppBind bind =new CarrierSmppBind(bindIds.getAndIncrement(), pduQueue, config
-				, requestSender, settings.getNpi(), settings.getTon(), tps);
+		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config
+				, requestSender,enquireLinkSender, settings.getNpi(), settings.getTon(), tps);
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
 	}

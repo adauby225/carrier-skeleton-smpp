@@ -21,18 +21,18 @@ public class CarrierSmppConnector {
 	private final MaxRequestPerSecond maxReqPerSecond;
 	
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, BindTypes bindTypes
-			, ServiceExecutor serviceExecutor, RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond) {
+			, ServiceExecutor serviceExecutor, RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond) {
 		this.connectorConfig = connectorConfig;
 		this.bindTypes = bindTypes;
-		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender);
+		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender);
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 	
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
-			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond) {
+			,RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond) {
 		this.connectorConfig = connectorConfig;
 		this.bindTypes = new BindTypes();
-		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender);
+		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender);
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 

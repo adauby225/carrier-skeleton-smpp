@@ -1,6 +1,7 @@
 package com.carrier.smpp.outbound.client;
 
 import static com.carrier.util.Messages.UNBINDING;
+import static com.carrier.util.Values.DEFAULT_ENQUIRE_LINK_INTERVAL;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +28,16 @@ public class CarrierSmppBind implements Runnable{
 	private Npi npi;
 	private Ton ton;
 	private int tps;
+	private RequestSender enquireLinkSender;
+	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
 
-	public CarrierSmppBind(Long id, PduQueue pduQueue, SmppSessionConfiguration config
-			,RequestSender requestSender,Npi npi,Ton ton,int tps) {
-		this.id = id;
+	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
+			,RequestSender enquireLinkSender,Npi npi,Ton ton,int tps) {
+		 
 		this.pduQueue = pduQueue;
 		this.config = config;
 		this.requestSender =requestSender;
+		this.enquireLinkSender = enquireLinkSender;
 		this.npi = npi;
 		this.ton = ton;
 		this.tps = tps;
@@ -42,6 +46,7 @@ public class CarrierSmppBind implements Runnable{
 	public Long getId() {
 		return id;
 	}
+	
 
 	@Override
 	public void run() {
@@ -50,6 +55,7 @@ public class CarrierSmppBind implements Runnable{
 			try {
 				connect();
 				requestSender.send(session, pduQueue, pduQueue.size());
+				enquireLinkSender.send(session,enquireLinkInterval);
 				timeToSleep = 100;
 			} catch (SmppTimeoutException e) {
 				logger.info(e);
