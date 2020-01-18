@@ -3,9 +3,13 @@ package com.carrier.smpp.outbound.client;
 import static com.carrier.util.Messages.UNBINDING;
 import static com.carrier.util.Values.DEFAULT_ENQUIRE_LINK_INTERVAL;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
+import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.util.ThreadUtil;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
@@ -30,17 +34,19 @@ public class CarrierSmppBind implements Runnable{
 	private int tps;
 	private RequestSender enquireLinkSender;
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
-
+	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
+	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
-			,RequestSender enquireLinkSender,Npi npi,Ton ton,int tps) {
-		 
+			,RequestSender enquireLinkSender,Map<Integer, SmscPduRequestHandler> smscReqHandlers
+			,Map<Integer, SmscPduResponseHandler> smscResponseHandlers,int tps) {
+
 		this.pduQueue = pduQueue;
 		this.config = config;
 		this.requestSender =requestSender;
 		this.enquireLinkSender = enquireLinkSender;
-		this.npi = npi;
-		this.ton = ton;
 		this.tps = tps;
+		this.smscReqHandlers = smscReqHandlers;
+		this.smscResponseHandlers = smscResponseHandlers;
 	}
 
 	public Long getId() {
@@ -89,7 +95,7 @@ public class CarrierSmppBind implements Runnable{
 		if (!unbound &&(this.session == null || this.session.isClosed())) {
 			SharedClientBootstrap sharedClientBootstrap = SharedClientBootstrap.getInstance();
 			DefaultSmppClient clientBootstrap = sharedClientBootstrap.getClientBootstrap();
-			sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue);
+			sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers,smscResponseHandlers);
 			this.session = clientBootstrap.bind(config, sessionHandler);
 		}
 	}

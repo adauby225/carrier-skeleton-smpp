@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.carrier.smpp.service.ServiceExecutor;
+import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
+import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.smpp.pdu.PduRequest;
 
 public class CarrierSmppConnector {
@@ -20,19 +22,14 @@ public class CarrierSmppConnector {
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
 	private final MaxRequestPerSecond maxReqPerSecond;
 	
-	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, BindTypes bindTypes
-			, ServiceExecutor serviceExecutor, RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond) {
-		this.connectorConfig = connectorConfig;
-		this.bindTypes = bindTypes;
-		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender);
-		this.maxReqPerSecond = maxReqPerSecond;
-	}
 	
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
-			,RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond) {
+			,RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond
+			,Map<Integer, SmscPduRequestHandler>smscReqHandlers,Map<Integer, SmscPduResponseHandler>smscresponseHandlers) {
 		this.connectorConfig = connectorConfig;
 		this.bindTypes = new BindTypes();
-		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender);
+		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender
+				,smscReqHandlers,smscresponseHandlers);
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 

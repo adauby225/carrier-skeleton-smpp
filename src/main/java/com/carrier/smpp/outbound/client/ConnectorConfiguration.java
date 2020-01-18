@@ -23,11 +23,14 @@ public class ConnectorConfiguration{
 	private int throughput=DEFAULT_TPS;
 	private byte smppVersion = SmppConstants.VERSION_3_4;
 	private String systemType;
+	private BindTypes bindTypes=new BindTypes();
 	
 	
-	public ConnectorConfiguration(String name,String login, String password, String remoteHost, int remotePort) {
+	public ConnectorConfiguration(String name,String login, String password, String remoteHost
+			, int remotePort) {
 		this(login, password,  remoteHost, remotePort);
 		this.name = name;
+		this.bindTypes = bindTypes;
 	}
 	public ConnectorConfiguration(String login, String password, String remoteHost, int remotePort) {
 		super();
@@ -149,6 +152,14 @@ public class ConnectorConfiguration{
 	public boolean isHostEmpty() {
 		return host==null;
 	}
+	public BindTypes getBindTypes() {
+		return bindTypes;
+	}
+	public void setBindTypes(BindTypes bindTypes) {
+		this.bindTypes = bindTypes;
+	}
+	
+	
 	
 	
 	

@@ -1,7 +1,9 @@
 package com.carrier.smpp.demo.client;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,12 +19,19 @@ import com.carrier.smpp.outbound.client.MaxTpsDefault;
 import com.carrier.smpp.outbound.client.PduQueue;
 import com.carrier.smpp.outbound.client.RequestSender;
 import com.carrier.smpp.service.BindExecutor;
+import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
+import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
+import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
+import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
+import com.cloudhopper.smpp.pdu.DeliverSm;
 import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.pdu.SubmitSm;
+import com.cloudhopper.smpp.pdu.SubmitSmResp;
 import com.cloudhopper.smpp.type.Address;
 import com.cloudhopper.smpp.type.RecoverablePduException;
 import com.cloudhopper.smpp.type.SmppChannelException;
@@ -36,17 +45,23 @@ public class SmppClient {
 	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
 		
 		ConnectorConfiguration settings = new ConnectorConfiguration("sysId", "passwd", "127.0.0.1", 34567);
-		
+		// map responseHandlers
+		Map<Integer, SmscPduResponseHandler>respHandlers = new HashMap<>();
+		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
+		//map request form smsc
+		Map<Integer, SmscPduRequestHandler>reqHandlers = new HashMap<>();
+		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		settings.setWindowSize(1);
         settings.setName("test.carrier.0");
         settings.setHost("127.0.0.1");
         
         
 		BindTypes bindTypes = new BindTypes(0,1,1);
+		settings.setBindTypes(bindTypes);
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		MaxTpsDefault maxTps = new MaxTpsDefault();
-        CarrierSmppConnector connector = new CarrierSmppConnector(settings,bindTypes,BindExecutor::runBind
-        		,pduRequestSender,new DefaultEnquireLinkSender(),maxTps);
+        CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
+        		,pduRequestSender,new DefaultEnquireLinkSender(),maxTps,reqHandlers,respHandlers);
         connector.connect();
         String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
         byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
@@ -58,6 +73,7 @@ public class SmppClient {
         sms.setSourceAddress(sourceAddress);
         sms.setDestAddress(destAddress);
         sms.setShortMessage(textBytes);
+        sms.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
         connector.addRequestFirst(sms);
         List<CarrierSmppBind>binds = connector.getBinds();
         boolean isBound=false;
@@ -133,5 +149,25 @@ class PduRequestSender implements RequestSender{
 	
 	
 
+}
+class SubmitSmRespHandler implements SmscPduResponseHandler{
+	private final Logger logger = LogManager.getLogger(SubmitSmRespHandler.class);
+	@Override
+	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
+		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
+		logger.info("handling submitSm resp: "+resp);
+	}
+	
+}
+
+class deliverSmHandler implements SmscPduRequestHandler {
+	private final Logger logger = LogManager.getLogger(deliverSmHandler.class);
+	@Override
+	public PduResponse handle(PduRequest pduRequest) {
+		DeliverSm deliver = (DeliverSm)pduRequest;
+		logger.info("handling deliverSm: " + deliver);
+		return deliver.createResponse();
+	}
+	
 }
 
