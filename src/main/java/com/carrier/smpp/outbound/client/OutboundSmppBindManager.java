@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.carrier.smpp.service.ServiceExecutor;
+import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
+import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
+import com.carrier.util.Messages;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
@@ -18,20 +21,24 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
 	private final RequestSender enquireLinkSender;
+	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
+	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
-			, RequestSender requestSender, RequestSender enquireLinkSender) {
+			, RequestSender requestSender, RequestSender enquireLinkSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
+			, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
 		this.requestSender = requestSender;
 		this.enquireLinkSender = enquireLinkSender;
-		
+		this.smscReqHandlers = smscReqHandlers;
+		this.smscResponseHandlers = smscResponseHandlers;
 	}
 	
 	@Override
 	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType bindType,int tps) {
 		SmppSessionConfiguration config = getSessionConfig(settings, bindType);
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config
-				, requestSender,enquireLinkSender, settings.getNpi(), settings.getTon(), tps);
+				, requestSender,enquireLinkSender,smscReqHandlers,smscResponseHandlers, tps);
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
 	}
@@ -61,8 +68,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 
 	@Override
 	public void establishBind(ConnectorConfiguration t, PduQueue pduQueue, int tps) {
-		
-		
+		throw new UnsupportedOperationException(Messages.UNAUTHORIZED_OPERATION);
 	}
 
 
