@@ -67,7 +67,7 @@ public class Binds {
         //create new bind
         logger.info("Press any key to add new bind");
         System.in.read();
-        connector.createNewBind(new BindTypes(1, 0, 0));
+        connector.createNewBinds(new BindTypes(1, 0, 0));
         List<CarrierSmppBind>binds_2 = connector.getBinds();
         for(CarrierSmppBind bind: binds_2) {
         	logger.info("bind {} is bound: {} with tps {}",bind.getId(), bind.isUp(), bind.getTps());

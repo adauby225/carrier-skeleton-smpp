@@ -1,24 +1,24 @@
 package com.carrier.smpp.outbound.client;
 
 public class BindTypes {
-	private int tranceivers=1;
+	private int transceivers=1;
 	private int transmitters=0;
 	private int receivers=0;
 	
 	public BindTypes() {}
 	
-	public BindTypes(int tranceivers, int transmitters, int receivers) {
+	public BindTypes(int transceivers, int transmitters, int receivers) {
 		super();
-		this.tranceivers = tranceivers;
+		this.transceivers = transceivers;
 		this.transmitters = transmitters;
 		this.receivers = receivers;
 	}
 	
-	public int getTranceivers() {
-		return tranceivers;
+	public int getTransceivers() {
+		return transceivers;
 	}
-	public void setTranceivers(int tranceivers) {
-		this.tranceivers = tranceivers;
+	public void setTransceivers(int transceivers) {
+		this.transceivers = transceivers;
 	}
 	public int getTransmitters() {
 		return transmitters;
@@ -34,11 +34,11 @@ public class BindTypes {
 	}
 
 	public int total() {
-		return tranceivers + receivers + transmitters;
+		return transceivers + receivers + transmitters;
 	}
 
 	public void update(BindTypes bindTypes) {
-		tranceivers = tranceivers + bindTypes.getTranceivers();
+		transceivers = transceivers + bindTypes.getTransceivers();
 		transmitters = transmitters + bindTypes.getTransmitters();
 		receivers = receivers + bindTypes.getReceivers();
 	}
