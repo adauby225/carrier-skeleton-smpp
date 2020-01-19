@@ -17,7 +17,6 @@ import com.cloudhopper.smpp.pdu.PduRequest;
 public class CarrierSmppConnector {
 	
 	private ConnectorConfiguration connectorConfig;
-	private BindTypes bindTypes;
 	private OutboundSmppBindManager bindManager;
 	private PduQueue pduQueue = new PduQueue();
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
@@ -28,13 +27,13 @@ public class CarrierSmppConnector {
 			,RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, SmscPduRequestHandler>smscReqHandlers,Map<Integer, SmscPduResponseHandler>smscresponseHandlers) {
 		this.connectorConfig = connectorConfig;
-		this.bindTypes = new BindTypes();
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender
 				,smscReqHandlers,smscresponseHandlers);
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 
 	public void connect() {
+		BindTypes bindTypes = connectorConfig.getBindTypes();
 		int tpsByBind =maxReqPerSecond.calculateTpsByBind(bindTypes, connectorConfig.getThroughput());
 		createNewBind(TRANSCEIVER,bindTypes.getTranceivers(), tpsByBind);
 		createNewBind(RECEIVER,bindTypes.getReceivers(), tpsByBind);
@@ -46,13 +45,11 @@ public class CarrierSmppConnector {
 	}
 	
 	public void createNewBind(BindTypes bindTypes) {
-		bindTypes.update(bindTypes);
-		int newTpsByBind = maxReqPerSecond.calculateTpsByBind(bindTypes, connectorConfig.getThroughput());
+		connectorConfig.updateBindTypes(bindTypes);
+		int newTpsByBind = maxReqPerSecond.calculateTpsByBind(connectorConfig.getBindTypes(), connectorConfig.getThroughput());
 		bindManager.updateBindTps(newTpsByBind);
 		createNewBind(TRANSCEIVER,bindTypes.getTranceivers(), newTpsByBind);
-		
-		
-		
+
 	}
 	
 	public void disconnect() {

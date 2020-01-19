@@ -30,7 +30,7 @@ public class ConnectorConfiguration{
 			, int remotePort) {
 		this(login, password,  remoteHost, remotePort);
 		this.name = name;
-		this.bindTypes = bindTypes;
+		
 	}
 	public ConnectorConfiguration(String login, String password, String remoteHost, int remotePort) {
 		super();
@@ -157,6 +157,9 @@ public class ConnectorConfiguration{
 	}
 	public void setBindTypes(BindTypes bindTypes) {
 		this.bindTypes = bindTypes;
+	}
+	public void updateBindTypes(BindTypes bindTypes) {
+		this.bindTypes.update(bindTypes);
 	}
 	
 	
