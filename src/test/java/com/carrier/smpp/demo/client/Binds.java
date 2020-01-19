@@ -61,7 +61,7 @@ public class Binds {
         List<CarrierSmppBind>binds_1 = connector.getBinds();
     
         for(CarrierSmppBind bind: binds_1) {
-        	logger.info("bind {} is bound: {}",bind.getId(), bind.isUp());
+        	logger.info("bind {} is bound: {} with tps {}",bind.getId(), bind.isUp(),bind.getTps());
         }
         //create new bind
         logger.info("Press any key to add new bind");
@@ -69,9 +69,9 @@ public class Binds {
         connector.createNewBind(new BindTypes(1, 0, 0));
         List<CarrierSmppBind>binds_2 = connector.getBinds();
         for(CarrierSmppBind bind: binds_2) {
-        	logger.info("bind {} is bound: {}",bind.getId(), bind.isUp());
+        	logger.info("bind {} is bound: {} with tps {}",bind.getId(), bind.isUp(), bind.getTps());
         }
-        logger.info("Press any key to bind 1 ");
+        logger.info("Press any key to unbind bind 1 ");
         System.in.read();
         connector.stopBind(1);
         logger.info("Press any key to unbind and close sessions");

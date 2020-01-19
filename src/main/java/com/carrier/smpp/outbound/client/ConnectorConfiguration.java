@@ -158,6 +158,9 @@ public class ConnectorConfiguration{
 	public void setBindTypes(BindTypes bindTypes) {
 		this.bindTypes = bindTypes;
 	}
+	public void updateBindTypes(BindTypes bindTypes) {
+		this.bindTypes.update(bindTypes);
+	}
 	
 	
 	
