@@ -46,7 +46,7 @@ public class CarrierSmppConnector {
 	
 	public void createNewBind(BindTypes bindTypes) {
 		connectorConfig.updateBindTypes(bindTypes);
-		int newTpsByBind = maxReqPerSecond.calculateTpsByBind(bindTypes, connectorConfig.getThroughput());
+		int newTpsByBind = maxReqPerSecond.calculateTpsByBind(connectorConfig.getBindTypes(), connectorConfig.getThroughput());
 		bindManager.updateBindTps(newTpsByBind);
 		createNewBind(TRANSCEIVER,bindTypes.getTranceivers(), newTpsByBind);
 

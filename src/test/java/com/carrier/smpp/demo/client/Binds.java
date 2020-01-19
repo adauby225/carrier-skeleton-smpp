@@ -41,6 +41,7 @@ public class Binds {
         
 		BindTypes bindTypes = new BindTypes(0,1,1);
 		settings.setBindTypes(bindTypes);
+		settings.setThroughput(20);
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		MaxTpsDefault maxTps = new MaxTpsDefault();
         CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
