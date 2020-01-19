@@ -19,7 +19,6 @@ public final class SessionManager {
 	}
 
 	public  int sessionsSize() {
-		
 		return sessions.size();
 	}
 

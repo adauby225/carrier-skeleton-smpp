@@ -36,6 +36,13 @@ public class BindTypes {
 	public int total() {
 		return tranceivers + receivers + transmitters;
 	}
+
+	public void update(BindTypes bindTypes) {
+		tranceivers = tranceivers + bindTypes.getTranceivers();
+		transmitters = transmitters + bindTypes.getTransmitters();
+		receivers = receivers + bindTypes.getReceivers();
+	}
+
 	
 	
 

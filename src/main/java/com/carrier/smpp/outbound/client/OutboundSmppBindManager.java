@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.carrier.smpp.CarrierSmppInstance;
 import com.carrier.smpp.service.ServiceExecutor;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
@@ -39,6 +40,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		SmppSessionConfiguration config = getSessionConfig(settings, bindType);
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config
 				, requestSender,enquireLinkSender,smscReqHandlers,smscResponseHandlers, tps);
+		bind.setId(bindIds.getAndIncrement());
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
 	}
@@ -65,10 +67,25 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	public List<CarrierSmppBind> getListOfBinds() {
 		return binds.values().stream().map(CarrierSmppBind::self).collect(toList());
 	}
+	
+	public void updateBindTps(int newTps) {
+		for(CarrierSmppBind bind : binds.values()) {
+			bind.setTps(newTps);
+		}
+	}
 
 	@Override
 	public void establishBind(ConnectorConfiguration t, PduQueue pduQueue, int tps) {
 		throw new UnsupportedOperationException(Messages.UNAUTHORIZED_OPERATION);
+	}
+
+	public void stopBind(long id) {
+		CarrierSmppBind bind=null;
+		if(binds!=null && !binds.isEmpty()) {
+			bind = binds.remove(id);
+			bind.setUnbound(true);
+		}
+		
 	}
 
 

@@ -48,10 +48,9 @@ public class DefaultEnquireLinkSender implements RequestSender {
 	
 	private void sendEnquireLink(SmppSession session) throws UnrecoverablePduException, SmppChannelException, InterruptedException{
 		EnquireLink enquireLink = new EnquireLink();
-		logger.info(enquireLink);
 		lastSent = LocalDateTime.now();
 		try {
-			logger.info(session.getConfiguration().getRequestExpiryTimeout());
+			logger.info(enquireLink);
 			EnquireLinkResp enquireLinkResp = session.enquireLink(enquireLink, 
 					session.getConfiguration().getRequestExpiryTimeout());
 			logger.info(enquireLinkResp);

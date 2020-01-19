@@ -14,7 +14,6 @@ import com.carrier.smpp.outbound.client.CarrierSmppConnector;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
 import com.carrier.smpp.outbound.client.ConnectorConfiguration;
 import com.carrier.smpp.outbound.client.DefaultEnquireLinkSender;
-import com.carrier.smpp.outbound.client.MaxRequestPerSecond;
 import com.carrier.smpp.outbound.client.MaxTpsDefault;
 import com.carrier.smpp.outbound.client.PduQueue;
 import com.carrier.smpp.outbound.client.RequestSender;
@@ -89,9 +88,7 @@ public class SmppClient {
         BindExecutor.stopAll();
         SharedClientBootstrap sharedClientBootStrap = SharedClientBootstrap.getInstance();
         sharedClientBootStrap.stopClientBootStrap();
-		
-		
-		
+	
 	}
 	
 }
