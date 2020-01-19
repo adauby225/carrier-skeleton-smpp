@@ -60,7 +60,7 @@ public class CarrierSmppBind implements Runnable{
 		while(!unbound) {
 			try {
 				connect();
-				requestSender.send(session, pduQueue, pduQueue.size());
+				requestSender.send(session, pduQueue, tps);
 				enquireLinkSender.send(session,enquireLinkInterval);
 				timeToSleep = 100;
 			} catch (SmppTimeoutException e) {
