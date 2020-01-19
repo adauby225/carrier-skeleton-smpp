@@ -35,7 +35,7 @@ public class CarrierSmppConnector {
 	public void connect() {
 		BindTypes bindTypes = connectorConfig.getBindTypes();
 		int tpsByBind =maxReqPerSecond.calculateTpsByBind(bindTypes, connectorConfig.getThroughput());
-		createNewBind(TRANSCEIVER,bindTypes.getTranceivers(), tpsByBind);
+		createNewBind(TRANSCEIVER,bindTypes.getTransceivers(), tpsByBind);
 		createNewBind(RECEIVER,bindTypes.getReceivers(), tpsByBind);
 		createNewBind(TRANSMITTER, bindTypes.getTransmitters(), tpsByBind);
 	}
@@ -44,12 +44,13 @@ public class CarrierSmppConnector {
 			bindManager.establishBind(connectorConfig, pduQueue,type,tpsByBind);
 	}
 	
-	public void createNewBind(BindTypes bindTypes) {
+	public void createNewBinds(BindTypes bindTypes) {
 		connectorConfig.updateBindTypes(bindTypes);
 		int newTpsByBind = maxReqPerSecond.calculateTpsByBind(connectorConfig.getBindTypes(), connectorConfig.getThroughput());
 		bindManager.updateBindTps(newTpsByBind);
-		createNewBind(TRANSCEIVER,bindTypes.getTranceivers(), newTpsByBind);
-
+		createNewBind(TRANSCEIVER,bindTypes.getTransceivers(), newTpsByBind);
+		createNewBind(RECEIVER,bindTypes.getReceivers(), newTpsByBind);
+		createNewBind(TRANSMITTER, bindTypes.getTransmitters(), newTpsByBind);
 	}
 	
 	public void disconnect() {
