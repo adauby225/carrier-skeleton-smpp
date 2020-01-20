@@ -25,7 +25,7 @@ public class ConnectorConfiguration{
 	private String systemType;
 	private BindTypes bindTypes=new BindTypes();
 	
-	
+	public ConnectorConfiguration() {}
 	public ConnectorConfiguration(String name,String login, String password, String remoteHost
 			, int remotePort) {
 		this(login, password,  remoteHost, remotePort);

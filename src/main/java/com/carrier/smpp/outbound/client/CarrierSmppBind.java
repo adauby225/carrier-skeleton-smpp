@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.util.ThreadUtil;
+import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
@@ -148,6 +149,10 @@ public class CarrierSmppBind implements Runnable{
 	public void unbind() {
 		if(session!=null && session.isBound())
 			session.unbind(10000);
+	}
+	
+	public SmppBindType getType() {
+		return config.getType();
 	}
 	
 
