@@ -14,7 +14,10 @@ public class PduQueue {
 	private Deque<PduRequest> fireRequestReceived = new LinkedList<>(); 
 	
 	public boolean isEmpty() {
-		return false;
+		readLock.lock();
+		boolean empty = fireRequestReceived.isEmpty();
+		readLock.unlock();
+		return empty;
 	}
 
 	public PduRequest takeFirstRequest() {
