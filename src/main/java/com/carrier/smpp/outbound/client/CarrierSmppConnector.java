@@ -71,7 +71,10 @@ public class CarrierSmppConnector {
 
 	public void stopBind(int id) {
 		bindManager.stopBind(id);
-		
+	}
+	
+	public int sizeOfRequest() {
+		return pduQueue.size();
 	}
 
 	
