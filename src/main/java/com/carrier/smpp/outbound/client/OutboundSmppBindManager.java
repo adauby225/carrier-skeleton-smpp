@@ -47,6 +47,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	
 	public SmppSessionConfiguration getSessionConfig(ConnectorConfiguration connectorConfig,SmppBindType type) {
 		SmppSessionConfiguration config = new SmppSessionConfiguration(type, connectorConfig.getLogin(), connectorConfig.getPassword());
+		config.setName(connectorConfig.getName());
 		config.setHost(connectorConfig.getRemoteHost());
 		config.setPort(connectorConfig.getRemotePort());
 		config.setWindowSize(connectorConfig.getWindowSize());
