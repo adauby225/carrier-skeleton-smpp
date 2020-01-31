@@ -43,7 +43,7 @@ public class SmppClient {
 	private static final Logger logger = LogManager.getLogger(SmppClient.class);
 	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
 		
-		ConnectorConfiguration settings = new ConnectorConfiguration("sysId", "passwd", "127.0.0.1", 34567);
+		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "188.165.48.8", 2345);
 		// map responseHandlers
 		Map<Integer, SmscPduResponseHandler>respHandlers = new HashMap<>();
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
@@ -76,10 +76,9 @@ public class SmppClient {
         connector.addRequestFirst(sms);
         List<CarrierSmppBind>binds = connector.getBinds();
         boolean isBound=false;
-        for(CarrierSmppBind bind: binds) {
-        	isBound =bind.isUp();
-        	logger.info("bind is bound: " + true);
-        }
+        for(CarrierSmppBind bind: binds)
+        	logger.info("bind is bound: " + bind.isUp());
+        
         
         logger.info("Press any key to unbind and close sessions");
         System.in.read();

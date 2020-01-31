@@ -29,4 +29,5 @@ public final class SessionManager {
 	public ConcurrentMap<Long,EsmeSmppSession> getSessions() {
 		return sessions;
 	}
+	
 }
