@@ -2,10 +2,9 @@ package com.carrier.smpp.model.esme;
 
 
 public class EsmeAccount {
-	private String systemId;
-	private String password;
-	private String host;
-	
+	protected String systemId;
+	protected String password;
+	protected String host;
 	
 	
 	public EsmeAccount(String systemId, String password) {

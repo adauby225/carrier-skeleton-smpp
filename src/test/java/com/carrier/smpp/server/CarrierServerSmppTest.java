@@ -16,6 +16,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carrier.smpp.demo.server.PduHandlersDemo;
 import com.carrier.smpp.esme.request.EsmeRequestHandler;
 import com.carrier.smpp.esme.response.EsmeResponseHandler;
 import com.carrier.smpp.model.esme.EsmeAccount;
@@ -44,6 +45,7 @@ public class CarrierServerSmppTest {
 	private static final String SYSTEMID = "client1";
 	private static final String PASSWD = "passwd01";
 	private static final String MESSAGE_ID = "fcc45-523kl-j8ep";
+	private PduhandlersTester pduHandlers = new PduhandlersTester();
 	private class EsmeAccountRepTest implements EsmeAccountRepository{
 		final EsmeAccount account;
 		private EsmeAccountRepTest(EsmeAccount account) {
@@ -64,12 +66,11 @@ public class CarrierServerSmppTest {
 
 	@Test
 	public void testSessionOk() throws Exception{
-		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
-		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
+		
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),pduHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -96,12 +97,10 @@ public class CarrierServerSmppTest {
 	@Test
 	public void testInvalidSystemId() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
 	, HandlerException {
-		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
-		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount("WRONG_SYS_ID", PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),pduHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -122,12 +121,11 @@ public class CarrierServerSmppTest {
 	@Test
 	public void testInvalidPassword() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
 	, HandlerException {
-		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
-		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
+		
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, "bad_passwd")))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),pduHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -148,15 +146,11 @@ public class CarrierServerSmppTest {
 	@Test
 	public void testHandleSubmitSm() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException
 	, InterruptedException, SmppInvalidArgumentException, RecoverablePduException, HandlerException {
-	
-		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
-		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
-		requestHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
 		
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),pduHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -187,7 +181,7 @@ public class CarrierServerSmppTest {
 		List<ConfigParameter>parameterCheckers = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)))
-				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),requestHandlers,responseHandlers);
+				, new EsmeAccountRepTest(new EsmeAccount(SYSTEMID, PASSWD)),pduHandlers);
 
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
@@ -244,7 +238,7 @@ public class CarrierServerSmppTest {
 
 	}
 	
-	private class SubmitSmHandler implements EsmeRequestHandler {
+	 class SubmitSmHandler implements EsmeRequestHandler {
 
 		@Override
 		public PduResponse handleRequest(PduRequest pduRequest, EsmeSmppSession esmeSmppSession) {
@@ -256,7 +250,7 @@ public class CarrierServerSmppTest {
 
 	}
 	
-	private class UnbindHandler implements EsmeRequestHandler {
+	 class UnbindHandler implements EsmeRequestHandler {
 
 		@Override
 		public PduResponse handleRequest(PduRequest pduRequest, EsmeSmppSession esmeSmppSession) {
