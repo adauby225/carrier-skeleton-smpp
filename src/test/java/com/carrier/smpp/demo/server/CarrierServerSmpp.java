@@ -17,14 +17,11 @@ import com.carrier.smpp.server.HandlerException;
 public class CarrierServerSmpp {
 	
 	public static void main(String[] args) throws HandlerException {
-		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
-		Map<Integer, EsmeResponseHandler>responseHandlers = new HashMap<>();
-		requestHandlers.put(CMD_ID_SUBMIT_SM, new SubmitSmHandlerExple());
-		requestHandlers.put(CMD_ID_UNBIND, new UnbindHandlerExple());
+		PduHandlersDemo pduHandlers = new PduHandlersDemo();
+		
 		
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
-				new EsmeBindRequestHandlerExple(), new EsmeAccountRepositoryExple(),requestHandlers
-				,responseHandlers);
+				new EsmeBindRequestHandlerExple(), new EsmeAccountRepositoryExple(),pduHandlers);
 		
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, new SmppSrvConfigLoaderExple(), carrierSmppServerHandler);

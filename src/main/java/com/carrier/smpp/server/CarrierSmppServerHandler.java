@@ -3,13 +3,9 @@ package com.carrier.smpp.server;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_MESSAGE_MAP;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 
-import java.util.Map;
-
-import com.carrier.smpp.esme.request.EsmeRequestHandler;
-import com.carrier.smpp.esme.response.EsmeResponseHandler;
+import com.carrier.smpp.esme.request.Handlers;
 import com.carrier.smpp.model.esme.EsmeAccount;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
-import com.carrier.util.Messages;
 import com.cloudhopper.smpp.SmppServerHandler;
 import com.cloudhopper.smpp.SmppServerSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
@@ -21,18 +17,13 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 	private final BindRequestHandler bindRequestHandler;
 	private final EsmeAccountRepository accountRepository;
 	private SessionManager sessionManager = SessionManager.getInstance();
-	private final Map<Integer,EsmeRequestHandler>requestHandlers;
-	private final Map<Integer, EsmeResponseHandler> responseHandlers;
+	private Handlers handlers;
 	public CarrierSmppServerHandler(BindRequestHandler bindRequestHandler
-			,EsmeAccountRepository accountRepository,Map<Integer,EsmeRequestHandler>requestHandlers
-			, Map<Integer, EsmeResponseHandler> responseHandlers) throws HandlerException {
+			,EsmeAccountRepository accountRepository, Handlers handlers) {
 		super();
 		this.bindRequestHandler = bindRequestHandler;
 		this.accountRepository = accountRepository;
-		if(requestHandlers==null) throw new HandlerException(Messages.NULL_REQUEST_HANDLER);
-		this.requestHandlers = requestHandlers;
-		if(responseHandlers==null) throw new HandlerException(Messages.NULL_RESPONSE_HANDLER);
-		this.responseHandlers = responseHandlers;
+		this.handlers  = handlers;
 	}
 
 	@Override
@@ -50,7 +41,8 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 		SmppSessionConfiguration config = session.getConfiguration();
 		EsmeAccount account = accountRepository.findBySystemId(config.getSystemId());
 		EsmeSmppSession newEsmeSession  = new EsmeSmppSession(session,account);
-		session.serverReady(new EsmeSmppSessionHandler(sessionId,newEsmeSession,requestHandlers, responseHandlers));
+		session.serverReady(new EsmeSmppSessionHandler(sessionId,newEsmeSession,handlers.getrequestHandlers()
+				, handlers.getResponseHandlers()));
 		sessionManager.addNewSession(sessionId,newEsmeSession);
 	}
 

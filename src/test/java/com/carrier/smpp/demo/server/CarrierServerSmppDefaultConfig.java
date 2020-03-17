@@ -32,7 +32,7 @@ public class CarrierServerSmppDefaultConfig {
 				parameters,new EsmeAccountRepositoryExple());
 		
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(defaultEsmeBindRequestHandler
-				,new EsmeAccountRepositoryExple(),requestHandlers,responseHandlers);
+				,new EsmeAccountRepositoryExple(),new PduHandlersDemo());
 		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
 				, carrierSmppServerHandler);
 		
