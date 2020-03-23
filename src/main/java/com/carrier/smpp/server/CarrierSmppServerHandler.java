@@ -4,7 +4,7 @@ import static com.cloudhopper.smpp.SmppConstants.STATUS_MESSAGE_MAP;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 
 import com.carrier.smpp.esme.request.Handlers;
-import com.carrier.smpp.model.esme.EsmeAccount;
+import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.cloudhopper.smpp.SmppServerHandler;
 import com.cloudhopper.smpp.SmppServerSession;
@@ -39,7 +39,7 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 	public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse)
 			throws SmppProcessingException {
 		SmppSessionConfiguration config = session.getConfiguration();
-		EsmeAccount account = accountRepository.findBySystemId(config.getSystemId());
+		EsmeSmppAccount account = accountRepository.findBySystemId(config.getSystemId());
 		EsmeSmppSession newEsmeSession  = new EsmeSmppSession(session,account);
 		session.serverReady(new EsmeSmppSessionHandler(sessionId,newEsmeSession,handlers.getrequestHandlers()
 				, handlers.getResponseHandlers()));

@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.carrier.smpp.esme.request.EsmeRequestHandler;
 import com.carrier.smpp.esme.response.EsmeResponseHandler;
-import com.carrier.smpp.model.esme.EsmeAccount;
+import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.carrier.smpp.server.CarrierSmppServer;
 import com.carrier.smpp.server.CarrierSmppServerHandler;
@@ -58,12 +58,12 @@ public class CarrierSmppConnectorTest {
 	private static final String MESSAGE_ID = "fcc45-523kl-j8ep";
 
 	private class EsmeAccountRepTest implements EsmeAccountRepository{
-		final EsmeAccount account;
-		private EsmeAccountRepTest(EsmeAccount account) {
+		final EsmeSmppAccount account;
+		private EsmeAccountRepTest(EsmeSmppAccount account) {
 			this.account = account;
 		}
 		@Override
-		public EsmeAccount findBySystemId(String systemId) {
+		public EsmeSmppAccount findBySystemId(String systemId) {
 			return account;
 		}
 	}
