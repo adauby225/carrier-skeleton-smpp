@@ -5,7 +5,7 @@ import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 import java.util.List;
 
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
-import com.carrier.smpp.model.esme.EsmeAccount;
+import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class DefaultEsmeBindRequestHandler implements BindRequestHandler {
@@ -19,7 +19,7 @@ public class DefaultEsmeBindRequestHandler implements BindRequestHandler {
 
 	@Override
 	public int handleRequest(SmppSessionConfiguration sessionConfiguration) {
-		EsmeAccount configParams = esmeAccountRepository.findBySystemId(sessionConfiguration.getSystemId());
+		EsmeSmppAccount configParams = esmeAccountRepository.findBySystemId(sessionConfiguration.getSystemId());
 		for(ConfigParameter param : parameters) {
 			int status = param.check(sessionConfiguration,configParams); 
 			if(status !=STATUS_OK)
