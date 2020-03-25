@@ -16,11 +16,10 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carrier.smpp.demo.server.PduHandlersDemo;
 import com.carrier.smpp.esme.request.EsmeRequestHandler;
 import com.carrier.smpp.esme.response.EsmeResponseHandler;
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
+import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppServerConfiguration;
@@ -80,7 +79,8 @@ public class CarrierServerSmppTest {
 			SmppSessionConfiguration sessionConfig0 = createClientConfiguration();
 			client0.bind(sessionConfig0);
 			SessionManager sessionManager = SessionManager.getInstance();
-			EsmeSmppSession esmeSession = sessionManager.getSessions().values().iterator().next();
+			Map<Long, EsmeSmppSession> smppSessions = sessionManager.getSessions();
+			EsmeSmppSession esmeSession = smppSessions.values().iterator().next();
 			SmppSession smppSession = esmeSession.getSmppSession();
 			assertEquals(1, sessionManager.sessionsSize());
 			assertEquals(SYSTEMID,smppSession.getConfiguration().getSystemId());
@@ -193,6 +193,7 @@ public class CarrierServerSmppTest {
 			SmppSession smppSession = client0.bind(sessionConfig0);
 			assertEquals(1, sessionManger.sessionsSize());
 			smppSession.unbind(1000);
+			//Thread.sleep(500);
 			assertEquals(0, sessionManger.sessionsSize());
 			assertEquals(true, smppSession.isClosed());
 		}finally {

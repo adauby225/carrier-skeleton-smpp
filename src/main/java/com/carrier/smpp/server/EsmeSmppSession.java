@@ -29,8 +29,10 @@ public class EsmeSmppSession {
 	}
 
 	public void destroySession() {
-		smppSession.unbind(unbindTimeout);
-		smppSession.destroy();
+		if(smppSession!=null) {
+			smppSession.unbind(unbindTimeout);
+			smppSession.destroy();
+		}
 
 	}	
 
