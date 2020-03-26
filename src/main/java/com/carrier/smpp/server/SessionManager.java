@@ -40,8 +40,8 @@ public final class SessionManager {
 	public EsmeSmppSession removeSession(Long sessionId) {
 		writeLock.lock();
 		EsmeSmppSession session = sessions.remove(sessionId);
-		session.destroySession();
 		writeLock.unlock();
+		session.destroySession();
 		return session;
 	}
 	
@@ -59,8 +59,9 @@ public final class SessionManager {
 	}
 
 	public Map<Long,EsmeSmppSession> getSessions() {
-		readLock.lock();
 		Map<Long, EsmeSmppSession>smppSessions = new HashMap<>();
+		readLock.lock();
+		
 		for(Entry<Long, EsmeSmppSession>entry : sessions.entrySet()) 
 			smppSessions.put(entry.getKey(), entry.getValue());
 		
