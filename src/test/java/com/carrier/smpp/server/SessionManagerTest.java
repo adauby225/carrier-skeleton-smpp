@@ -23,8 +23,8 @@ public class SessionManagerTest {
 		long sessionId0 = 1203;
 		long sessionId1 = 1204;
 
-		EsmeSmppSession session0 = new EsmeSmppSession(null, new EsmeSmppAccount());
-		EsmeSmppSession session1 = new EsmeSmppSession(null, new EsmeSmppAccount());
+		EsmeSmppSession session0 = new EsmeSmppSession(sessionId0, null, new EsmeSmppAccount());
+		EsmeSmppSession session1 = new EsmeSmppSession(sessionId1, null, new EsmeSmppAccount());
 		SessionManager sessionManager = SessionManager.getInstance();
 		assertEquals(0, sessionManager.sessionsSize());
 		sessionManager.addNewSession(sessionId0, session0);
@@ -36,8 +36,8 @@ public class SessionManagerTest {
 	public void testRemoveSession() {
 		long sessionId0 = 1203;
 		long sessionId1 = 1204;
-		EsmeSmppSession session0 = new EsmeSmppSession(null, new EsmeSmppAccount());
-		EsmeSmppSession session1 = new EsmeSmppSession(null, new EsmeSmppAccount());
+		EsmeSmppSession session0 = new EsmeSmppSession(sessionId0, null, new EsmeSmppAccount());
+		EsmeSmppSession session1 = new EsmeSmppSession(sessionId1, null, new EsmeSmppAccount());
 		SessionManager sessionManager = SessionManager.getInstance();
 		assertEquals(0, sessionManager.sessionsSize());
 		sessionManager.addNewSession(sessionId0, session0);
