@@ -193,7 +193,7 @@ public class CarrierServerSmppTest {
 			SmppSession smppSession = client0.bind(sessionConfig0);
 			assertEquals(1, sessionManger.sessionsSize());
 			smppSession.unbind(1000);
-			//Thread.sleep(500);
+			Thread.sleep(1001);
 			assertEquals(0, sessionManger.sessionsSize());
 			assertEquals(true, smppSession.isClosed());
 		}finally {
