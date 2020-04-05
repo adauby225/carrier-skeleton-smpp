@@ -40,14 +40,21 @@ public class BindMaxCheckerTest {
 		DefaultBindMaxChecker bindMaxChecker = new DefaultBindMaxChecker();
 		sessionManager.addNewSession(SESSION_0, session0);
 		sessionManager.addNewSession(SESSION_1, session1);
+		
+		int status = bindMaxChecker.check(createClientConfiguration(), smppAccount);
+		assertEquals(SmppConstants.STATUS_OK, status);
+	}
+	
+	@Test
+	public void testBindMaxReached(){
+		SessionManager sessionManager = SessionManager.getInstance();
+		DefaultBindMaxChecker bindMaxChecker = new DefaultBindMaxChecker();
+		sessionManager.addNewSession(SESSION_0, session0);
+		sessionManager.addNewSession(SESSION_1, session1);
 		sessionManager.addNewSession(SESSION_2, session2);
 		
 		int status = bindMaxChecker.check(createClientConfiguration(), smppAccount);
 		assertEquals(SmppConstants.STATUS_BINDFAIL, status);
-	}
-	
-	@Test
-	public void testBindMaReached(){
 		
 	}
 	
