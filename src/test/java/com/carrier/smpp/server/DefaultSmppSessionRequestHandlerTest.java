@@ -20,7 +20,7 @@ import com.cloudhopper.smpp.SmppSessionConfiguration;
 public class DefaultSmppSessionRequestHandlerTest {
 	private static final String SYSTEM_ID = "carrierId";
 	private static final String PASSWORD = "carrier-pass";
-	private ConfigParameter systemIdParameter = new  ConfigParameter() {
+	private SmppAccountParamCheckable systemIdParameter = new  SmppAccountParamCheckable() {
 		
 		@Override
 		public int check(SmppSessionConfiguration sessionConfiguration, EsmeSmppAccount configParams) {
@@ -30,7 +30,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 			return STATUS_OK;
 		}
 	};
-	private ConfigParameter passwordParameter = new ConfigParameter() {
+	private SmppAccountParamCheckable passwordParameter = new SmppAccountParamCheckable() {
 		@Override
 		public int check(SmppSessionConfiguration sessionConfiguration, EsmeSmppAccount configParams) {
 			String password = sessionConfiguration.getPassword();
@@ -41,7 +41,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 	};
 	
 	EsmeAccountRepository configParamsRepository = (systemId)-> new EsmeSmppAccount(SYSTEM_ID, PASSWORD);
-	private List<ConfigParameter>parameters = Arrays.asList(systemIdParameter,passwordParameter);
+	private List<SmppAccountParamCheckable>parameters = Arrays.asList(systemIdParameter,passwordParameter);
 	
 	@Test
 	public void testHandleRequestStatusOk() {

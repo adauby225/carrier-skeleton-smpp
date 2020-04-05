@@ -6,6 +6,7 @@ public class EsmeSmppAccount {
 	protected String systemId;
 	protected String password;
 	protected String host;
+	private int bindMax;
 	
 	
 	public EsmeSmppAccount(Long id, String systemId, String password) {
@@ -17,6 +18,12 @@ public class EsmeSmppAccount {
 	public EsmeSmppAccount(String systemId, String password) {
 		this.systemId = systemId;
 		this.password = password;
+	}
+	
+	public EsmeSmppAccount(String systemId, String password,int bindMax) {
+		this.systemId = systemId;
+		this.password = password;
+		this.bindMax = bindMax;
 	}
 
 	public EsmeSmppAccount() {} 
@@ -53,6 +60,18 @@ public class EsmeSmppAccount {
 	public void setHost(String host) {
 		this.host = host;
 	}
+	public void setBindMax(int bindMax) {
+		this.bindMax = bindMax;
+	}
+	public int getBindMax() {
+		return bindMax;
+	}
+
+	public boolean systemIdMatches(String systemId) {
+		return systemId.matches(systemId);
+	}
+
+	
 	
 
 }

@@ -10,24 +10,24 @@ import org.junit.Test;
 import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
-public class DefaultSystemIdParameterTest {
+public class DefaultCredentialTest {
 	private static final String SYSTEM_ID = "carrierId";
 	
 	@Test
 	public void testValidSystemId() {
-		DefaultSystemIdParameter defaultSystemIdParameter =new DefaultSystemIdParameter();
+		DefaultCredentialChecker defaultCredentialChecker =new DefaultCredentialChecker();
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(
 				TRANSCEIVER, SYSTEM_ID, "secret");
 		EsmeSmppAccount account = new EsmeSmppAccount(SYSTEM_ID,"secret");
-		assertEquals(STATUS_OK, defaultSystemIdParameter.check(sessionConfiguration, account)); 
+		assertEquals(STATUS_OK, defaultCredentialChecker.check(sessionConfiguration, account)); 
 	}
 	
 	@Test
 	public void testInvalidSystemId() {
-		DefaultSystemIdParameter defaultSystemIdParameter =new DefaultSystemIdParameter();
+		DefaultCredentialChecker defaultCredentialChecker =new DefaultCredentialChecker();
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(
 				TRANSCEIVER, "invalid", "secret");
 		EsmeSmppAccount account = new EsmeSmppAccount(SYSTEM_ID, "secret");
-		assertEquals(STATUS_INVSYSID, defaultSystemIdParameter.check(sessionConfiguration, account));
+		assertEquals(STATUS_INVSYSID, defaultCredentialChecker.check(sessionConfiguration, account));
 	}
 }
