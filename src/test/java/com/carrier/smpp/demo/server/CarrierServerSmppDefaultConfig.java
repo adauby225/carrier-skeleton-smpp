@@ -12,10 +12,9 @@ import com.carrier.smpp.esme.request.EsmeRequestHandler;
 import com.carrier.smpp.esme.response.EsmeResponseHandler;
 import com.carrier.smpp.server.CarrierSmppServer;
 import com.carrier.smpp.server.CarrierSmppServerHandler;
-import com.carrier.smpp.server.ConfigParameter;
+import com.carrier.smpp.server.DefaultCredentialChecker;
+import com.carrier.smpp.server.SmppAccountParamCheckable;
 import com.carrier.smpp.server.DefaultEsmeBindRequestHandler;
-import com.carrier.smpp.server.DefaultPasswordParameter;
-import com.carrier.smpp.server.DefaultSystemIdParameter;
 import com.carrier.smpp.server.HandlerException;
 import com.cloudhopper.smpp.SmppConstants;
 
@@ -27,9 +26,9 @@ public class CarrierServerSmppDefaultConfig {
 		requestHandlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandlerExple());
 		
 		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
-		List<ConfigParameter>parameters = Arrays.asList(new DefaultSystemIdParameter(),new DefaultPasswordParameter());
+		List<SmppAccountParamCheckable>checkers = Arrays.asList(new DefaultCredentialChecker());
 		DefaultEsmeBindRequestHandler defaultEsmeBindRequestHandler = new DefaultEsmeBindRequestHandler(
-				parameters,new EsmeAccountRepositoryExple());
+				checkers,new EsmeAccountRepositoryExple());
 		
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(defaultEsmeBindRequestHandler
 				,new EsmeAccountRepositoryExple(),new PduHandlersDemo());

@@ -45,6 +45,10 @@ public class EsmeSmppSession {
 			smppSession.destroy();
 		}
 
+	}
+
+	public boolean sessionMatches(String systemId) {
+		return account.systemIdMatches(systemId);
 	}	
 
 

@@ -69,5 +69,12 @@ public final class SessionManager {
 		readLock.unlock();
 		return smppSessions;
 	}
+	public long countSessions(String systemId) {
+		readLock.lock();
+		long count= sessions.values().stream().filter(session ->
+		session.sessionMatches(systemId)).count();
+		readLock.unlock();
+		return count;
+	}
 	
 }

@@ -9,9 +9,9 @@ import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class DefaultEsmeBindRequestHandler implements BindRequestHandler {
-	private final List<ConfigParameter>parameters;
+	private final List<SmppAccountParamCheckable>parameters;
 	private final EsmeAccountRepository esmeAccountRepository;
-	public DefaultEsmeBindRequestHandler(List<ConfigParameter> parameters, EsmeAccountRepository esmeAccountRepository) {
+	public DefaultEsmeBindRequestHandler(List<SmppAccountParamCheckable> parameters, EsmeAccountRepository esmeAccountRepository) {
 		super();
 		this.parameters = parameters;
 		this.esmeAccountRepository = esmeAccountRepository;
@@ -20,7 +20,7 @@ public class DefaultEsmeBindRequestHandler implements BindRequestHandler {
 	@Override
 	public int handleRequest(SmppSessionConfiguration sessionConfiguration) {
 		EsmeSmppAccount configParams = esmeAccountRepository.findBySystemId(sessionConfiguration.getSystemId());
-		for(ConfigParameter param : parameters) {
+		for(SmppAccountParamCheckable param : parameters) {
 			int status = param.check(sessionConfiguration,configParams); 
 			if(status !=STATUS_OK)
 				return status;
