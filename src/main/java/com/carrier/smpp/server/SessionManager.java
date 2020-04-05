@@ -43,6 +43,7 @@ public final class SessionManager {
 		writeLock.unlock();
 		if(session!=null)
 			session.destroySession();
+
 		return session;
 	}
 	
