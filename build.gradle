@@ -30,6 +30,7 @@ dependencies {
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
 	implementation 'com.github.Adauby:cloudhopper-smpp:04a3959'
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 	
 	testImplementation group: 'junit', name: 'junit', version: '4.12'
 	intTestImplementation group: 'junit', name: 'junit', version: '4.12'

@@ -16,7 +16,7 @@ public class PduhandlersTester implements Handlers{
 	
 	
 	public PduhandlersTester() {
-		requestHandlers.put(CMD_ID_SUBMIT_SM, new SubmitSmHandlerTester());
+		requestHandlers.put(CMD_ID_SUBMIT_SM, new SubmitSmHandler());
 		requestHandlers.put(CMD_ID_UNBIND, new UnbindHandlerTester());
 	}
 	@Override
