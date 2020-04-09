@@ -1,5 +1,6 @@
 package com.carrier.smpp.model.esme;
 
+import com.carrier.util.Values;
 
 public class EsmeSmppAccount {
 	private Long id;
@@ -7,6 +8,7 @@ public class EsmeSmppAccount {
 	protected String password;
 	protected String host;
 	private int bindMax;
+	private int tps=Values.DEFAULT_TPS;
 	
 	
 	public EsmeSmppAccount(Long id, String systemId, String password) {
@@ -65,6 +67,15 @@ public class EsmeSmppAccount {
 	}
 	public int getBindMax() {
 		return bindMax;
+	}
+	
+
+	public int getTps() {
+		return tps;
+	}
+
+	public void setTps(int tps) {
+		this.tps = tps;
 	}
 
 	public boolean systemIdMatches(String systemId) {
