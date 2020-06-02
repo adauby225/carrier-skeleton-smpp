@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.carrier.smpp.CarrierSmppInstance;
-import com.carrier.smpp.service.ServiceExecutor;
+
+import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.util.Messages;

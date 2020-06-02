@@ -12,7 +12,7 @@ public class SmscPduResponseHandlerFactory {
 	}
 
 	public SmscPduResponseHandler getHandler(int cmdId) {
-		return responseHandlers.get(cmdId);
+		return responseHandlers.getOrDefault(cmdId, new UnhandleResp());
 	}
 
 }

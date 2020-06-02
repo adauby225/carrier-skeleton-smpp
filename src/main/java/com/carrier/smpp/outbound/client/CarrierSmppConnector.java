@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.carrier.smpp.service.ServiceExecutor;
+import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.smpp.SmppBindType;

@@ -1,4 +1,4 @@
-package com.carrier.smpp.service;
+package com.carrier.smpp.executor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
