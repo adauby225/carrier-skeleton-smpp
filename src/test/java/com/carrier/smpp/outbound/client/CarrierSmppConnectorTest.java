@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class CarrierSmppConnectorTest {
 	private final static Logger logger = LogManager.getLogger(CarrierSmppConnectorTest.class);
@@ -19,7 +20,7 @@ public class CarrierSmppConnectorTest {
 			this.account = account;
 		}
 		@Override
-		public EsmeSmppAccount findBySystemId(String systemId) {
+		public EsmeSmppAccount find(SmppSessionConfiguration sessionConfig) {
 			return account;
 		}
 	}

@@ -39,7 +39,7 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 	public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse)
 			throws SmppProcessingException {
 		SmppSessionConfiguration config = session.getConfiguration();
-		EsmeSmppAccount account = accountRepository.findBySystemId(config.getSystemId());
+		EsmeSmppAccount account = accountRepository.find(config);
 		EsmeSmppSession newEsmeSession  = new EsmeSmppSession(sessionId, session,account);
 		session.serverReady(new EsmeSmppSessionHandler(sessionId,newEsmeSession,handlers.getrequestHandlers()
 				, handlers.getResponseHandlers()));

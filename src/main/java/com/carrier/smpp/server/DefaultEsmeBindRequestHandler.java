@@ -19,7 +19,7 @@ public class DefaultEsmeBindRequestHandler implements BindRequestHandler {
 
 	@Override
 	public int handleRequest(SmppSessionConfiguration sessionConfiguration) {
-		EsmeSmppAccount configParams = esmeAccountRepository.findBySystemId(sessionConfiguration.getSystemId());
+		EsmeSmppAccount configParams = esmeAccountRepository.find(sessionConfiguration);
 		for(SmppAccountParamCheckable param : parameters) {
 			int status = param.check(sessionConfiguration,configParams); 
 			if(status !=STATUS_OK)
