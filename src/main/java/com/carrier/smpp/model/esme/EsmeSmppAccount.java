@@ -81,8 +81,6 @@ public class EsmeSmppAccount {
 	public boolean systemIdMatches(String systemId) {
 		return systemId.matches(systemId);
 	}
-
-	
 	
 
 }

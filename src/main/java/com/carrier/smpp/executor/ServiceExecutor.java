@@ -1,4 +1,4 @@
-package com.carrier.smpp.service;
+package com.carrier.smpp.executor;
 
 public interface ServiceExecutor {
 

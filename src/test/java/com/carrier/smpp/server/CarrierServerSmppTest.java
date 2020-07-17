@@ -51,7 +51,7 @@ public class CarrierServerSmppTest {
 			this.account = account;
 		}
 		@Override
-		public EsmeSmppAccount findBySystemId(String systemId) {
+		public EsmeSmppAccount find(SmppSessionConfiguration sessionConfig) {
 			return account;
 		}
 	}
