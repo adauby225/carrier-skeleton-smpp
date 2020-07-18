@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.carrier.util.Messages;
 import com.cloudhopper.smpp.SmppSession;
+import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.pdu.EnquireLink;
 import com.cloudhopper.smpp.pdu.EnquireLinkResp;
 import com.cloudhopper.smpp.type.RecoverablePduException;
@@ -19,7 +20,15 @@ import com.cloudhopper.smpp.util.SmppSessionUtil;
 public class DefaultEnquireLinkSender implements RequestSender {
 	private LocalDateTime lastSent;
 	private boolean firstSent=true;
-	private Logger logger = LogManager.getLogger(DefaultEnquireLinkSender.class);
+	private final Logger logger;
+	
+	public DefaultEnquireLinkSender(String loggerName) {
+		super();
+		if(loggerName== null)
+			logger = LogManager.getLogger(DefaultEnquireLinkSender.class);
+		else logger = LogManager.getLogger(loggerName);
+		
+	}
 	
 	@Override
 	public void send(SmppSession session, PduQueue pduQueue, int tps) throws InterruptedException {
@@ -51,9 +60,8 @@ public class DefaultEnquireLinkSender implements RequestSender {
 		lastSent = LocalDateTime.now();
 		try {
 			logger.info(enquireLink);
-			EnquireLinkResp enquireLinkResp = session.enquireLink(enquireLink, 
-					session.getConfiguration().getRequestExpiryTimeout());
-			logger.info(enquireLinkResp);
+			SmppSessionConfiguration config = session.getConfiguration();
+			session.sendRequestPdu(enquireLink, config.getRequestExpiryTimeout(), false);
 		}catch(SmppTimeoutException | RecoverablePduException e) {
 			logger.warn(e);
 		}

@@ -60,7 +60,7 @@ public class SmppClient {
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		MaxTpsDefault maxTps = new MaxTpsDefault();
         CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
-        		,pduRequestSender,new DefaultEnquireLinkSender(),maxTps,reqHandlers,respHandlers);
+        		,pduRequestSender,new DefaultEnquireLinkSender(settings.getName()),maxTps,reqHandlers,respHandlers);
         connector.connect();
         String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
         byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);

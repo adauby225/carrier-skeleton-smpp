@@ -15,6 +15,7 @@ import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.util.Messages;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
+import com.cloudhopper.smpp.type.LoggingOptions;
 
 public class OutboundSmppBindManager implements Connection<ConnectorConfiguration> {
 	private static AtomicLong bindIds = new  AtomicLong(1);
@@ -53,6 +54,11 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		config.setWindowSize(connectorConfig.getWindowSize());
 		config.setRequestExpiryTimeout(DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT);
         config.setWindowMonitorInterval(DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT);
+        config.setCountersEnabled(true);
+        LoggingOptions logginOption  = new LoggingOptions();
+        logginOption.setLogBytes(false);
+        logginOption.setLogPdu(false);
+        config.setLoggingOptions(logginOption);
 		if(!connectorConfig.isHostEmpty())
 			config.setLocalAddress(connectorConfig.getHost());
 		return config;
