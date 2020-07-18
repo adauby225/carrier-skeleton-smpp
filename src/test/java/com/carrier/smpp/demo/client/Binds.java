@@ -8,14 +8,13 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.carrier.smpp.executor.BindExecutor;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
 import com.carrier.smpp.outbound.client.CarrierSmppConnector;
 import com.carrier.smpp.outbound.client.ConnectorConfiguration;
-import com.carrier.smpp.outbound.client.DefaultEnquireLinkSender;
 import com.carrier.smpp.outbound.client.MaxTpsDefault;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
-import com.carrier.smpp.executor.BindExecutor;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
@@ -45,7 +44,7 @@ public class Binds {
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		MaxTpsDefault maxTps = new MaxTpsDefault();
         CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
-        		,pduRequestSender,new DefaultEnquireLinkSender(settings.getName()),maxTps,reqHandlers,respHandlers);
+        		,pduRequestSender,maxTps,reqHandlers,respHandlers);
         connector.connect();
         String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
         byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);

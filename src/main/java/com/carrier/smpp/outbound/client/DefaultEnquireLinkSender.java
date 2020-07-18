@@ -10,7 +10,6 @@ import com.carrier.util.Messages;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.pdu.EnquireLink;
-import com.cloudhopper.smpp.pdu.EnquireLinkResp;
 import com.cloudhopper.smpp.type.RecoverablePduException;
 import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppTimeoutException;
@@ -25,7 +24,7 @@ public class DefaultEnquireLinkSender implements RequestSender {
 	public DefaultEnquireLinkSender(String loggerName) {
 		super();
 		if(loggerName== null)
-			logger = LogManager.getLogger(DefaultEnquireLinkSender.class);
+			logger = LogManager.getLogger(DefaultEnquireLinkSender.class.getName());
 		else logger = LogManager.getLogger(loggerName);
 		
 	}
@@ -59,8 +58,8 @@ public class DefaultEnquireLinkSender implements RequestSender {
 		EnquireLink enquireLink = new EnquireLink();
 		lastSent = LocalDateTime.now();
 		try {
-			logger.info(enquireLink);
 			SmppSessionConfiguration config = session.getConfiguration();
+			logger.info(enquireLink);
 			session.sendRequestPdu(enquireLink, config.getRequestExpiryTimeout(), false);
 		}catch(SmppTimeoutException | RecoverablePduException e) {
 			logger.warn(e);

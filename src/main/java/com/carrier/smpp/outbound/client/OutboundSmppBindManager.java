@@ -22,25 +22,24 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
-	private final RequestSender enquireLinkSender;
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
 	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
-			, RequestSender requestSender, RequestSender enquireLinkSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
+			, RequestSender requestSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
 			, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
 		this.requestSender = requestSender;
-		this.enquireLinkSender = enquireLinkSender;
 		this.smscReqHandlers = smscReqHandlers;
 		this.smscResponseHandlers = smscResponseHandlers;
 	}
 	
 	@Override
-	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType bindType,int tps) {
-		SmppSessionConfiguration config = getSessionConfig(settings, bindType);
+	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) {
+		SmppSessionConfiguration config = getSessionConfig(settings, type);
+		String bindName = config.getName() + type.toString();
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config
-				, requestSender,enquireLinkSender,smscReqHandlers,smscResponseHandlers, tps);
+				, requestSender,new DefaultEnquireLinkSender(bindName),smscReqHandlers,smscResponseHandlers, tps);
 		bind.setId(bindIds.getAndIncrement());
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);

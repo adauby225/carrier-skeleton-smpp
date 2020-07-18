@@ -24,11 +24,11 @@ public class CarrierSmppConnector {
 	
 	
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
-			,RequestSender requestSender,RequestSender enquireLinkSender,MaxRequestPerSecond maxReqPerSecond
+			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, SmscPduRequestHandler>smscReqHandlers,Map<Integer, SmscPduResponseHandler>smscresponseHandlers) {
 		this.connectorConfig = connectorConfig;
-		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,enquireLinkSender
-				,smscReqHandlers,smscresponseHandlers);
+		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
+				,smscresponseHandlers);
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 
