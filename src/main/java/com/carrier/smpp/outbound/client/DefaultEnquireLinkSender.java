@@ -62,7 +62,7 @@ public class DefaultEnquireLinkSender implements RequestSender {
 			logger.info(enquireLink);
 			session.sendRequestPdu(enquireLink, config.getRequestExpiryTimeout(), false);
 		}catch(SmppTimeoutException | RecoverablePduException e) {
-			logger.warn(e);
+			logger.warn(e.getMessage());
 		}
 	}
 

@@ -65,7 +65,7 @@ public class CarrierSmppBind implements Runnable{
 				enquireLinkSender.send(session,enquireLinkInterval);
 				timeToSleep = 100;
 			} catch (SmppTimeoutException e) {
-				logger.info(e);
+				logger.warn(e.getMessage());
 
 			}catch(InterruptedException e) {
 				logger.warn(e);
@@ -74,7 +74,7 @@ public class CarrierSmppBind implements Runnable{
 				currentThread.interrupt();
 
 			} catch (SmppChannelException |  UnrecoverablePduException  e) {
-				logger.warn(e);
+				logger.warn(e.getMessage());
 				SmppSessionUtil.close(session);
 				/*
 				 * Wait 30 seconds before trying again...
