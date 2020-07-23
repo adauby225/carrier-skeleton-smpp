@@ -53,17 +53,20 @@ public class CarrierSmppBind implements Runnable{
 	public Long getId() {
 		return id;
 	}
-	
+
 
 	@Override
 	public void run() {
-		
+
 		while(!unbound) {
 			try {
 				connect();
-				requestSender.send(session, pduQueue, tps);
-				enquireLinkSender.send(session,enquireLinkInterval);
+				if(session != null && session.isBound() && session.isOpen()) {
+					requestSender.send(session, pduQueue, tps);
+					enquireLinkSender.send(session,enquireLinkInterval);
+				}
 				timeToSleep = 100;
+
 			} catch (SmppTimeoutException e) {
 				logger.warn(e.getMessage());
 
@@ -100,7 +103,7 @@ public class CarrierSmppBind implements Runnable{
 			this.session = clientBootstrap.bind(config, sessionHandler);
 		}
 	}
-	
+
 	public CarrierSmppBind self() {
 		return this;
 	}
@@ -150,10 +153,10 @@ public class CarrierSmppBind implements Runnable{
 		if(session!=null && session.isBound())
 			session.unbind(10000);
 	}
-	
+
 	public SmppBindType getType() {
 		return config.getType();
 	}
-	
+
 
 }
