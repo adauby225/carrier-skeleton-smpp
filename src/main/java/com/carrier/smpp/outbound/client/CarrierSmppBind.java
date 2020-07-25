@@ -67,22 +67,21 @@ public class CarrierSmppBind implements Runnable{
 				}
 				timeToSleep = 100;
 
-			} catch (SmppTimeoutException e) {
+			} catch (SmppTimeoutException | SmppChannelException |  UnrecoverablePduException  e) {
+				
 				logger.warn(e.getMessage());
+				destroySession();
+				/*
+				 * Wait 10 seconds before trying again...
+				 */
+				timeToSleep = 10000;
 
 			}catch(InterruptedException e) {
-				logger.warn(e);
-				SmppSessionUtil.close(session);
+				logger.error(e);
 				Thread currentThread = Thread.currentThread();
 				currentThread.interrupt();
-
-			} catch (SmppChannelException |  UnrecoverablePduException  e) {
-				logger.warn(e.getMessage());
-				SmppSessionUtil.close(session);
-				/*
-				 * Wait 30 seconds before trying again...
-				 */
-				timeToSleep = 30000;
+				destroySession();
+				
 			}finally {
 				if(!unbound)
 					ThreadUtil.sleep(timeToSleep);
@@ -156,6 +155,14 @@ public class CarrierSmppBind implements Runnable{
 
 	public SmppBindType getType() {
 		return config.getType();
+	}
+	private void destroySession() {
+		if (session!=null) {
+			session.destroy();
+			session = null;
+		}
+		
+		
 	}
 
 
