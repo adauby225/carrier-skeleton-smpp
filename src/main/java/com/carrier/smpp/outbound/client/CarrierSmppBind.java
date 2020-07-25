@@ -69,7 +69,7 @@ public class CarrierSmppBind implements Runnable{
 
 			} catch (SmppTimeoutException | SmppChannelException |  UnrecoverablePduException  e) {
 				
-				logger.warn(e.getMessage());
+				logger.warn("[connection failure]" + e.getMessage());
 				destroySession();
 				/*
 				 * Wait 10 seconds before trying again...
@@ -77,7 +77,7 @@ public class CarrierSmppBind implements Runnable{
 				timeToSleep = 10000;
 
 			}catch(InterruptedException e) {
-				logger.error(e);
+				logger.error("[connection failure]" + e);
 				Thread currentThread = Thread.currentThread();
 				currentThread.interrupt();
 				destroySession();
@@ -95,10 +95,12 @@ public class CarrierSmppBind implements Runnable{
 	private void connect() throws SmppTimeoutException,
 	SmppChannelException, UnrecoverablePduException, InterruptedException {
 		DefaultSmppSessionHandler sessionHandler=null;
+		logger.info("trying to connect ... bind is null: {} | bind is closed: {} ",(this.session == null),(this.session.isClosed()));
 		if (!unbound &&(this.session == null || this.session.isClosed())) {
 			SharedClientBootstrap sharedClientBootstrap = SharedClientBootstrap.getInstance();
 			DefaultSmppClient clientBootstrap = sharedClientBootstrap.getClientBootstrap();
 			sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers,smscResponseHandlers);
+			logger.info("binding ...");
 			this.session = clientBootstrap.bind(config, sessionHandler);
 		}
 	}
