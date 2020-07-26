@@ -1,4 +1,4 @@
-package com.carrier.util;
+package com.carrier.smpp.util;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;

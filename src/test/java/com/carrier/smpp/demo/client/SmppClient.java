@@ -42,7 +42,7 @@ public class SmppClient {
 	private static final Logger logger = LogManager.getLogger(SmppClient.class);
 	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
 		
-		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "188.165.48.8", 2345);
+		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
 		// map responseHandlers
 		Map<Integer, SmscPduResponseHandler>respHandlers = new HashMap<>();
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
@@ -97,7 +97,6 @@ class PduRequestSender implements RequestSender{
 	public void send(SmppSession session, PduQueue pduQueue, int tps) throws InterruptedException {
 		if(session.isBound() && !pduQueue.isEmpty()) {
 			try {
-				
 			SmppSessionConfiguration config=  session.getConfiguration();
 			sendMessage(session,tps,canSubmit(config.getType()),pduQueue);
 			}catch(UnrecoverablePduException  | SmppChannelException e) {
@@ -112,9 +111,12 @@ class PduRequestSender implements RequestSender{
 		PduRequest asynchronSubmit=null;
 		boolean submited=false;
 		try {
-			if(canSend) {
+			if(canSend && !pduQueue.isEmpty()) {
+				if(maxToSend > pduQueue.size())
+					maxToSend = pduQueue.size();
 				for(int i=0 ;i<maxToSend;i++) {
 					asynchronSubmit = pduQueue.takeFirstRequest();
+					logger.info("is submit null: {}",asynchronSubmit == null);
 					session.sendRequestPdu(asynchronSubmit,session.getConfiguration().getRequestExpiryTimeout(), false);				
 					logger.info(asynchronSubmit);	
 				}

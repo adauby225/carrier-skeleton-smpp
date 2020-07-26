@@ -1,6 +1,6 @@
 package com.carrier.smpp.esme.request;
 
-import static com.carrier.util.Values.ONE_SECOND_IN_MILLIS;
+import static com.carrier.smpp.util.Values.ONE_SECOND_IN_MILLIS;
 
 import org.apache.commons.lang3.time.StopWatch;
 

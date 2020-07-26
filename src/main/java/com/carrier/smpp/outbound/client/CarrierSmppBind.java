@@ -1,16 +1,19 @@
 package com.carrier.smpp.outbound.client;
 
-import static com.carrier.util.Messages.UNBINDING;
-import static com.carrier.util.Values.DEFAULT_ENQUIRE_LINK_INTERVAL;
+import static com.carrier.smpp.util.Messages.UNBINDING;
+import static com.carrier.smpp.util.Values.DEFAULT_ENQUIRE_LINK_INTERVAL;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
-import com.carrier.util.ThreadUtil;
+import com.carrier.smpp.util.LoggingUtil;
+import com.carrier.smpp.util.ThreadUtil;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
@@ -27,7 +30,7 @@ public class CarrierSmppBind implements Runnable{
 	private Long id;
 	private PduQueue pduQueue;
 	private SmppSessionConfiguration config;
-	private boolean unbound = false;
+	private AtomicBoolean unbound = new AtomicBoolean(false);
 	private SmppSession session = null;
 	private RequestSender requestSender;
 	private Npi npi;
@@ -37,6 +40,8 @@ public class CarrierSmppBind implements Runnable{
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
 	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
+	private DefaultSmppSessionHandler sessionHandler=null;
+	private CountDownLatch startSendingSignal;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
 			,RequestSender enquireLinkSender,Map<Integer, SmscPduRequestHandler> smscReqHandlers
 			,Map<Integer, SmscPduResponseHandler> smscResponseHandlers,int tps) {
@@ -58,18 +63,19 @@ public class CarrierSmppBind implements Runnable{
 	@Override
 	public void run() {
 
-		while(!unbound) {
+		while(!unbound.get()) {
 			try {
-				connect();
-				if(session != null && session.isBound() && session.isOpen()) {
+				if(session != null && session.isBound()) {
 					requestSender.send(session, pduQueue, tps);
 					enquireLinkSender.send(session,enquireLinkInterval);
-				}
+				}else reconnect();
+
 				timeToSleep = 100;
 
 			} catch (SmppTimeoutException | SmppChannelException |  UnrecoverablePduException  e) {
-				
-				logger.warn("[connection failure]" + e.getMessage());
+
+				logger.warn("Unable to connect: " + e.getMessage() + " " + LoggingUtil.toString(config, false));
+				logger.debug("", e);
 				destroySession();
 				/*
 				 * Wait 10 seconds before trying again...
@@ -81,27 +87,32 @@ public class CarrierSmppBind implements Runnable{
 				Thread currentThread = Thread.currentThread();
 				currentThread.interrupt();
 				destroySession();
-				
+
 			}finally {
-				if(!unbound)
+				if(!unbound.get()) 
 					ThreadUtil.sleep(timeToSleep);
+				
 			}
 		}
 		logger.info(UNBINDING);
-		SmppSessionUtil.close(session);
-
+		unbind();
+	}
+	private void reconnect() throws SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException {
+		destroySession();
+		connect();
 	}
 
+	public void intialize() {
+		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers,smscResponseHandlers);
+	}
 	private void connect() throws SmppTimeoutException,
 	SmppChannelException, UnrecoverablePduException, InterruptedException {
-		DefaultSmppSessionHandler sessionHandler=null;
-		logger.info("trying to connect ... bind is null: {} | bind is closed: {} ",(this.session == null),(this.session.isClosed()));
-		if (!unbound &&(this.session == null || this.session.isClosed())) {
+		if (!unbound.get() &&(this.session == null || this.session.isClosed())) {
+			logger.info("connecting {}", this);
 			SharedClientBootstrap sharedClientBootstrap = SharedClientBootstrap.getInstance();
 			DefaultSmppClient clientBootstrap = sharedClientBootstrap.getClientBootstrap();
-			sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers,smscResponseHandlers);
-			logger.info("binding ...");
 			this.session = clientBootstrap.bind(config, sessionHandler);
+			logger.info("connected {}", this);
 		}
 	}
 
@@ -115,11 +126,7 @@ public class CarrierSmppBind implements Runnable{
 	}
 
 	public boolean isUnbound() {
-		return unbound;
-	}
-
-	public void setUnbound(boolean unbound) {
-		this.unbound = unbound;
+		return unbound.get();
 	}
 
 	public void setId(Long id) {
@@ -151,20 +158,54 @@ public class CarrierSmppBind implements Runnable{
 	}
 
 	public void unbind() {
-		if(session!=null && session.isBound())
-			session.unbind(10000);
+		if(session!=null && session.isBound()) {
+			session.unbind(1000);
+			SmppSessionUtil.close(session);
+			unbound.set(true);
+		}
 	}
 
 	public SmppBindType getType() {
 		return config.getType();
 	}
 	private void destroySession() {
-		if (session!=null) {
-			session.destroy();
-			session = null;
+		try {
+			if (session!=null ) {
+				logger.debug("Cleaning up session... (final counters)");
+				logCounters();
+				session.destroy();
+				session = null;
+				timeToSleep = 10000;
+			}
+		}catch(Exception e) {
+			logger.warn("Destroy session error", e);
 		}
-		
-		
+
+
+
+	}
+
+	private void logCounters() {
+		if (session.hasCounters()) {
+			logger.debug("tx-enquireLink: {}", session.getCounters().getTxEnquireLink());
+			logger.debug("tx-submitSM: {}", session.getCounters().getTxSubmitSM());
+			logger.debug("tx-deliverSM: {}", session.getCounters().getTxDeliverSM());
+			logger.debug("tx-dataSM: {}", session.getCounters().getTxDataSM());
+			logger.debug("rx-enquireLink: {}", session.getCounters().getRxEnquireLink());
+			logger.debug("rx-submitSM: {}", session.getCounters().getRxSubmitSM());
+			logger.debug("rx-deliverSM: {}", session.getCounters().getRxDeliverSM());
+			logger.debug("rx-dataSM: {}", session.getCounters().getRxDataSM());
+		}
+
+	}
+	@Override
+	public String toString() {
+		return LoggingUtil.toString(config, true);
+	}
+
+	public void setStartSendingSignal(CountDownLatch startSendingSignal) {
+		this.startSendingSignal = startSendingSignal;
+
 	}
 
 

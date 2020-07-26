@@ -1,6 +1,6 @@
 package com.carrier.smpp.model.esme;
 
-import com.carrier.util.Values;
+import com.carrier.smpp.util.Values;
 
 public class EsmeSmppAccount {
 	private Long id;

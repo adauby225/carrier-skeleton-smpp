@@ -1,7 +1,7 @@
 package com.carrier.smpp.server;
 
-import static com.carrier.util.SkeletonExecutors.getExecutor;
-import static com.carrier.util.SkeletonExecutors.getMonitorExecutor;
+import static com.carrier.smpp.util.SkeletonExecutors.getExecutor;
+import static com.carrier.smpp.util.SkeletonExecutors.getMonitorExecutor;
 import static com.cloudhopper.smpp.SmppBindType.TRANSCEIVER;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_INVPASWD;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_INVSYSID;

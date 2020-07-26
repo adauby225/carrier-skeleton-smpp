@@ -1,7 +1,7 @@
 package com.carrier.smpp.demo.server;
 
-import static com.carrier.util.SkeletonExecutors.getExecutor;
-import static com.carrier.util.SkeletonExecutors.getMonitorExecutor;
+import static com.carrier.smpp.util.SkeletonExecutors.getExecutor;
+import static com.carrier.smpp.util.SkeletonExecutors.getMonitorExecutor;
 import static com.cloudhopper.smpp.SmppConstants.CMD_ID_SUBMIT_SM;
 import static com.cloudhopper.smpp.SmppConstants.CMD_ID_UNBIND;
 

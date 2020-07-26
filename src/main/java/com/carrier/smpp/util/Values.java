@@ -1,4 +1,4 @@
-package com.carrier.util;
+package com.carrier.smpp.util;
 
 public class Values {
 	

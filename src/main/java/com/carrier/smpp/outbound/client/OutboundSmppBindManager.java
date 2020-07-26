@@ -1,18 +1,19 @@
 package com.carrier.smpp.outbound.client;
 
-import static com.carrier.util.Values.DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT;
-import static com.carrier.util.Values.DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT;
+import static com.carrier.smpp.util.Values.DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT;
+import static com.carrier.smpp.util.Values.DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
-import com.carrier.util.Messages;
+import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.type.LoggingOptions;
@@ -24,6 +25,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private final RequestSender requestSender;
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
 	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
+	CountDownLatch startSendingSignal = new CountDownLatch(1);
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
 			, RequestSender requestSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
 			, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
@@ -33,18 +35,20 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		this.smscReqHandlers = smscReqHandlers;
 		this.smscResponseHandlers = smscResponseHandlers;
 	}
-	
+
 	@Override
 	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
 		String bindName = config.getName() +"-"+ type.toString();
-		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config
-				, requestSender,new DefaultEnquireLinkSender(bindName),smscReqHandlers,smscResponseHandlers, tps);
+		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, requestSender
+				,new DefaultEnquireLinkSender(bindName),smscReqHandlers,smscResponseHandlers, tps);
 		bind.setId(bindIds.getAndIncrement());
+		bind.setStartSendingSignal(startSendingSignal);
+		bind.intialize();
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
 	}
-	
+
 	public SmppSessionConfiguration getSessionConfig(ConnectorConfiguration connectorConfig,SmppBindType type) {
 		SmppSessionConfiguration config = new SmppSessionConfiguration(type, connectorConfig.getLogin(), connectorConfig.getPassword());
 		config.setName(connectorConfig.getName());
@@ -52,28 +56,28 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		config.setPort(connectorConfig.getRemotePort());
 		config.setWindowSize(connectorConfig.getWindowSize());
 		config.setRequestExpiryTimeout(DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT);
-        config.setWindowMonitorInterval(DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT);
-        config.setCountersEnabled(true);
-        LoggingOptions logginOption  = new LoggingOptions();
-        logginOption.setLogBytes(false);
-        logginOption.setLogPdu(false);
-        config.setLoggingOptions(logginOption);
+		config.setWindowMonitorInterval(DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT);
+		config.setCountersEnabled(true);
+		config.getLoggingOptions().setLogBytes(false);
+		config.getLoggingOptions().setLogPdu(true);
 		if(!connectorConfig.isHostEmpty())
 			config.setLocalAddress(connectorConfig.getHost());
 		return config;
 	}
 
-	public void unbind() {
-		for(CarrierSmppBind bind: binds.values()) {
-			bind.unbind();
-			bind.setUnbound(true);
-		}
+	public synchronized void unbind() {
+		
+			for(CarrierSmppBind bind: binds.values()) {
+				bind.unbind();
+			}
+			startSendingSignal.countDown();
+
 	}
 
 	public List<CarrierSmppBind> getListOfBinds() {
 		return binds.values().stream().map(CarrierSmppBind::self).collect(toList());
 	}
-	
+
 	public void updateBindTps(int newTps) {
 		for(CarrierSmppBind bind : binds.values()) {
 			bind.setTps(newTps);
@@ -89,11 +93,11 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		CarrierSmppBind bind=null;
 		if(binds!=null && !binds.isEmpty()) {
 			bind = binds.remove(id);
-			bind.setUnbound(true);
+			bind.unbind();
 		}
-		
+
 	}
 
 
-	
+
 }

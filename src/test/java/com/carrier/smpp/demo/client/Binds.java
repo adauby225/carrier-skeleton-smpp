@@ -26,7 +26,7 @@ import com.cloudhopper.smpp.type.SmppInvalidArgumentException;
 public class Binds {
 	private static final Logger logger = LogManager.getLogger(Binds.class);
 	public static void main(String[] args) throws SmppInvalidArgumentException, IOException, InterruptedException {
-		ConnectorConfiguration settings = new ConnectorConfiguration("sysId", "passwd", "127.0.0.1", 34567);
+		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "127.0.0.1", 34568);
 		// map responseHandlers
 		Map<Integer, SmscPduResponseHandler>respHandlers = new HashMap<>();
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
@@ -38,7 +38,7 @@ public class Binds {
         settings.setHost("127.0.0.1");
         
         
-		BindTypes bindTypes = new BindTypes(0,1,1);
+		BindTypes bindTypes = new BindTypes(1,0,0);
 		settings.setBindTypes(bindTypes);
 		settings.setThroughput(20);
 		PduRequestSender pduRequestSender = new PduRequestSender();
@@ -52,11 +52,10 @@ public class Binds {
         Address sourceAddress = new Address();
         Address destAddress = new Address();
         sourceAddress.setAddress("SENDER");
-        destAddress.setAddress("22544404040");
+        destAddress.setAddress("225444040401");
         sms.setSourceAddress(sourceAddress);
         sms.setDestAddress(destAddress);
         sms.setShortMessage(textBytes);
-        sms.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
         connector.addRequestFirst(sms);
         List<CarrierSmppBind>binds_1 = connector.getBinds();
     
