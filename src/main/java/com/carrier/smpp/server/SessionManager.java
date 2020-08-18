@@ -49,6 +49,11 @@ public final class SessionManager {
 	
 	public Optional<EsmeSmppSession> findSessionBySystemId(String systemId) {
 		readLock.lock();
+		Optional<EsmeSmppSession> esmeSession = Optional.empty();
+		if(systemId==null) {
+			readLock.unlock();
+			return esmeSession;
+		}
 		for(EsmeSmppSession session : sessions.values()) {
 			EsmeSmppAccount smppAccount = session.getAccount();
 			if(systemId.equals(smppAccount.getSystemId())) {
@@ -57,7 +62,7 @@ public final class SessionManager {
 			}
 		}
 		readLock.unlock();
-		return Optional.empty();
+		return esmeSession;
 	}
 
 	public Map<Long,EsmeSmppSession> getSessions() {
