@@ -158,8 +158,9 @@ public class CarrierSmppBind implements Runnable{
 	}
 
 	public void unbind() {
-		if(session!=null && session.isBound()) {
-			session.unbind(1000);
+		if(session!=null ) {
+			if(session.isBound())
+				session.unbind(1000);
 			SmppSessionUtil.close(session);
 			unbound.set(true);
 		}
