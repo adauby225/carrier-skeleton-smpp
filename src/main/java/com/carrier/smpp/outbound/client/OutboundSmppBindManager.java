@@ -25,7 +25,6 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private final RequestSender requestSender;
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
 	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
-	CountDownLatch startSendingSignal = new CountDownLatch(1);
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
 			, RequestSender requestSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
 			, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
@@ -43,7 +42,6 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, requestSender
 				,new DefaultEnquireLinkSender(bindName),smscReqHandlers,smscResponseHandlers, tps);
 		bind.setId(bindIds.getAndIncrement());
-		bind.setStartSendingSignal(startSendingSignal);
 		bind.intialize();
 		serviceExecutor.execute(bind);
 		binds.put(bind.getId(), bind);
@@ -70,8 +68,6 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 			for(CarrierSmppBind bind: binds.values()) {
 				bind.unbind();
 			}
-			startSendingSignal.countDown();
-
 	}
 
 	public List<CarrierSmppBind> getListOfBinds() {

@@ -41,7 +41,6 @@ public class CarrierSmppBind implements Runnable{
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
 	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
 	private DefaultSmppSessionHandler sessionHandler=null;
-	private CountDownLatch startSendingSignal;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
 			,RequestSender enquireLinkSender,Map<Integer, SmscPduRequestHandler> smscReqHandlers
 			,Map<Integer, SmscPduResponseHandler> smscResponseHandlers,int tps) {
@@ -203,11 +202,5 @@ public class CarrierSmppBind implements Runnable{
 	public String toString() {
 		return LoggingUtil.toString(config, true);
 	}
-
-	public void setStartSendingSignal(CountDownLatch startSendingSignal) {
-		this.startSendingSignal = startSendingSignal;
-
-	}
-
 
 }
