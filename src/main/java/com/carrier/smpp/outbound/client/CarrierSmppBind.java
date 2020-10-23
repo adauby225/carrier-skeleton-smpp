@@ -64,11 +64,12 @@ public class CarrierSmppBind implements Runnable{
 
 		while(!unbound.get()) {
 			try {
-				if(session != null && session.isBound()) {
-					requestSender.send(session, pduQueue, tps);
-					enquireLinkSender.send(session,enquireLinkInterval);
-				}else reconnect();
-
+				if(!unbound.get()) {
+					if(session != null && session.isBound()) {
+						requestSender.send(session, pduQueue, tps);
+						enquireLinkSender.send(session,enquireLinkInterval);
+					}else reconnect();
+				}
 				timeToSleep = 100;
 
 			} catch (SmppTimeoutException | SmppChannelException |  UnrecoverablePduException  e) {
@@ -90,7 +91,7 @@ public class CarrierSmppBind implements Runnable{
 			}finally {
 				if(!unbound.get()) 
 					ThreadUtil.sleep(timeToSleep);
-				
+
 			}
 		}
 		logger.info(UNBINDING);
@@ -160,7 +161,7 @@ public class CarrierSmppBind implements Runnable{
 		if(session!=null ) {
 			if(session.isBound())
 				session.unbind(1000);
-			SmppSessionUtil.close(session);
+			session.destroy();
 			unbound.set(true);
 		}
 	}
