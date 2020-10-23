@@ -89,7 +89,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		CarrierSmppBind bind=null;
 		if(binds!=null && !binds.isEmpty()) {
 			bind = binds.remove(id);
-			bind.unbind();
+			bind.setUnbound(true);;
 		}
 
 	}
