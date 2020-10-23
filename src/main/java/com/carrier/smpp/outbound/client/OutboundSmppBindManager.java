@@ -57,7 +57,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		config.setWindowMonitorInterval(DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT);
 		config.setCountersEnabled(true);
 		config.getLoggingOptions().setLogBytes(false);
-		config.getLoggingOptions().setLogPdu(true);
+		config.getLoggingOptions().setLogPdu(false);
 		if(!connectorConfig.isHostEmpty())
 			config.setLocalAddress(connectorConfig.getHost());
 		return config;

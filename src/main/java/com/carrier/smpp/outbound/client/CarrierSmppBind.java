@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.smpp.util.LoggingUtil;
+import com.carrier.smpp.util.Messages;
 import com.carrier.smpp.util.ThreadUtil;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
@@ -64,12 +65,12 @@ public class CarrierSmppBind implements Runnable{
 
 		while(!unbound) {
 			try {
-				if(!unbound) {
-					if(session != null && session.isBound()) {
-						requestSender.send(session, pduQueue, tps);
-						enquireLinkSender.send(session,enquireLinkInterval);
-					}else reconnect();
-				}
+
+				if(session != null && session.isBound()) {
+					requestSender.send(session, pduQueue, tps);
+					enquireLinkSender.send(session,enquireLinkInterval);
+				}else reconnect();
+
 				timeToSleep = 100;
 
 			} catch (SmppTimeoutException | SmppChannelException |  UnrecoverablePduException  e) {
@@ -91,9 +92,11 @@ public class CarrierSmppBind implements Runnable{
 			}finally {
 				if(!unbound) 
 					ThreadUtil.sleep(timeToSleep);
-
 			}
+			if(unbound)
+				break;
 		}
+
 		logger.info(UNBINDING);
 		unbind();
 	}
@@ -129,6 +132,11 @@ public class CarrierSmppBind implements Runnable{
 		return unbound;
 	}
 
+
+	public void setUnbound(boolean unbound) {
+		this.unbound = unbound;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -159,9 +167,15 @@ public class CarrierSmppBind implements Runnable{
 
 	public void unbind() {
 		if(session!=null ) {
-			if(session.isBound())
+			if(session.isBound()) {
+				logger.info(Messages.SENDING_UNBIND);
 				session.unbind(1000);
-			session.destroy();
+			}
+			logCounters();
+			logger.info(Messages.SESSION_DESTRUCTION);
+			destroySession();
+			logger.info(Messages.DESTROYED_SESSION);
+
 		}
 	}
 
