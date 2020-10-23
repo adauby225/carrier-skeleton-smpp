@@ -65,9 +65,9 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 
 	public synchronized void unbind() {
 		
-			for(CarrierSmppBind bind: binds.values()) {
-				bind.unbind();
-			}
+			for(CarrierSmppBind bind: binds.values()) 
+				bind.setUnbound(true);
+			
 	}
 
 	public List<CarrierSmppBind> getListOfBinds() {
