@@ -30,7 +30,7 @@ public class CarrierSmppBind implements Runnable{
 	private Long id;
 	private PduQueue pduQueue;
 	private SmppSessionConfiguration config;
-	private AtomicBoolean unbound = new AtomicBoolean(false);
+	private boolean unbound = false;
 	private SmppSession session = null;
 	private RequestSender requestSender;
 	private Npi npi;
@@ -62,9 +62,9 @@ public class CarrierSmppBind implements Runnable{
 	@Override
 	public void run() {
 
-		while(!unbound.get()) {
+		while(!unbound) {
 			try {
-				if(!unbound.get()) {
+				if(!unbound) {
 					if(session != null && session.isBound()) {
 						requestSender.send(session, pduQueue, tps);
 						enquireLinkSender.send(session,enquireLinkInterval);
@@ -89,7 +89,7 @@ public class CarrierSmppBind implements Runnable{
 				destroySession();
 
 			}finally {
-				if(!unbound.get()) 
+				if(!unbound) 
 					ThreadUtil.sleep(timeToSleep);
 
 			}
@@ -107,7 +107,7 @@ public class CarrierSmppBind implements Runnable{
 	}
 	private void connect() throws SmppTimeoutException,
 	SmppChannelException, UnrecoverablePduException, InterruptedException {
-		if (!unbound.get() &&(this.session == null || this.session.isClosed())) {
+		if (!unbound &&(this.session == null || this.session.isClosed())) {
 			logger.info("connecting {}", this);
 			SharedClientBootstrap sharedClientBootstrap = SharedClientBootstrap.getInstance();
 			DefaultSmppClient clientBootstrap = sharedClientBootstrap.getClientBootstrap();
@@ -126,7 +126,7 @@ public class CarrierSmppBind implements Runnable{
 	}
 
 	public boolean isUnbound() {
-		return unbound.get();
+		return unbound;
 	}
 
 	public void setId(Long id) {
@@ -162,7 +162,6 @@ public class CarrierSmppBind implements Runnable{
 			if(session.isBound())
 				session.unbind(1000);
 			session.destroy();
-			unbound.set(true);
 		}
 	}
 
