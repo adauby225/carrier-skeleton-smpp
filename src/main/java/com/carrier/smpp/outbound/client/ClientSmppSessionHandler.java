@@ -11,6 +11,7 @@ import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandlerFactory;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
+import com.cloudhopper.smpp.pdu.EnquireLink;
 import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.pdu.PduResponse;
 
@@ -38,7 +39,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 
 	@Override
 	public void firePduRequestExpired(PduRequest pduRequest) {
-		if(pduQueue!=null)
+		logger.info("expired request:  {}",pduRequest);
+		if(pduQueue!=null && !(pduRequest instanceof EnquireLink))
 			pduQueue.addRequestFirst(pduRequest);
 
 	}
