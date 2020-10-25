@@ -26,7 +26,7 @@ import com.cloudhopper.smpp.type.UnrecoverablePduException;
 import com.cloudhopper.smpp.util.SmppSessionUtil;
 
 public class CarrierSmppBind implements Runnable{
-	private Logger logger = LogManager.getLogger(CarrierSmppBind.class);
+	private final Logger logger;
 	private long timeToSleep = 100;
 	private Long id;
 	private PduQueue pduQueue;
@@ -53,6 +53,7 @@ public class CarrierSmppBind implements Runnable{
 		this.tps = tps;
 		this.smscReqHandlers = smscReqHandlers;
 		this.smscResponseHandlers = smscResponseHandlers;
+		this.logger = LogManager.getLogger(config.getName());
 	}
 
 	public Long getId() {

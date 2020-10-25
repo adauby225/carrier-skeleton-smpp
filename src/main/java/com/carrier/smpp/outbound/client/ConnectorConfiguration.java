@@ -48,6 +48,8 @@ public class ConnectorConfiguration{
 	}
 
 	public String getName() {
+		if(name==null)
+			return login;
 		return name;
 	}
 
