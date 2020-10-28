@@ -47,13 +47,17 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 
 	@Override
 	public PduResponse firePduRequestReceived(PduRequest pduRequest) {
+		logger.info("[request send] : {}",pduRequest);
 		SmscPduRequestHandler reqHandler = smscPduReqFactory.getHandler(pduRequest.getCommandId());
-		return reqHandler.handle(pduRequest);
+		PduResponse response = reqHandler.handle(pduRequest);
+		logger.info("[response returned] : {}", response);
+		return response;
 	}
 
 	@Override
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
 		PduResponse resp = pduAsyncResponse.getResponse();
+		logger.info("[response received] : {}",resp);
 		SmscPduResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
 		respHandler.handleResponse(pduAsyncResponse);
 	}

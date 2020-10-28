@@ -38,9 +38,8 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	@Override
 	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
-		String bindName = config.getName() +"-"+ type.toString();
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, requestSender
-				,new DefaultEnquireLinkSender(bindName),smscReqHandlers,smscResponseHandlers, tps);
+				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,smscResponseHandlers, tps);
 		bind.setId(bindIds.getAndIncrement());
 		bind.intialize();
 		serviceExecutor.execute(bind);

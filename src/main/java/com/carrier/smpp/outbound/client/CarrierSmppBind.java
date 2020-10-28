@@ -4,8 +4,6 @@ import static com.carrier.smpp.util.Messages.UNBINDING;
 import static com.carrier.smpp.util.Values.DEFAULT_ENQUIRE_LINK_INTERVAL;
 
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +21,6 @@ import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
 import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppTimeoutException;
 import com.cloudhopper.smpp.type.UnrecoverablePduException;
-import com.cloudhopper.smpp.util.SmppSessionUtil;
 
 public class CarrierSmppBind implements Runnable{
 	private final Logger logger;
@@ -66,13 +63,10 @@ public class CarrierSmppBind implements Runnable{
 
 		while(!unbound) {
 			try {
-
 				if(session != null && session.isBound()) {
 					requestSender.send(session, pduQueue, tps);
 					enquireLinkSender.send(session,enquireLinkInterval);
 				}else reconnect();
-
-				timeToSleep = 100;
 
 			} catch (SmppTimeoutException | SmppChannelException |  UnrecoverablePduException  e) {
 
@@ -82,7 +76,6 @@ public class CarrierSmppBind implements Runnable{
 				/*
 				 * Wait 10 seconds before trying again...
 				 */
-				timeToSleep = 10000;
 
 			}catch(InterruptedException e) {
 				logger.error("[connection failure]" + e);

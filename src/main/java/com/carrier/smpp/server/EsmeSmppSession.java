@@ -49,6 +49,10 @@ public class EsmeSmppSession {
 
 	public boolean sessionMatches(String systemId) {
 		return account.systemIdMatches(systemId);
+	}
+
+	public String getAccountName() {
+		return account.getName();
 	}	
 
 
