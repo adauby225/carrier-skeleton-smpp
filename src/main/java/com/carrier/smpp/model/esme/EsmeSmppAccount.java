@@ -4,6 +4,7 @@ import com.carrier.smpp.util.Values;
 
 public class EsmeSmppAccount {
 	private Long id;
+	private String name;
 	protected String systemId;
 	protected String password;
 	protected String host;
@@ -76,6 +77,16 @@ public class EsmeSmppAccount {
 
 	public void setTps(int tps) {
 		this.tps = tps;
+	}
+
+	
+	public String getName() {
+		if(name==null)return systemId;
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public boolean systemIdMatches(String systemId) {

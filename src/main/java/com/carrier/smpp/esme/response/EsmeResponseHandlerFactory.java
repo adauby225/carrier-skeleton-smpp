@@ -4,7 +4,6 @@ import java.util.Map;
 
 public class EsmeResponseHandlerFactory {
 	private final Map<Integer, EsmeResponseHandler> handlers;
-	
 	public EsmeResponseHandlerFactory(Map<Integer, EsmeResponseHandler> handlers) {
 		this.handlers = handlers;
 	}
