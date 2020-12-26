@@ -59,7 +59,7 @@ public class DefaultEnquireLinkSender implements RequestSender {
 		lastSent = LocalDateTime.now();
 		try {
 			SmppSessionConfiguration config = session.getConfiguration();
-			logger.info(enquireLink);
+			logger.info("[request sent] : {}",enquireLink);
 			session.sendRequestPdu(enquireLink, config.getRequestExpiryTimeout(), false);
 		}catch(SmppTimeoutException | RecoverablePduException e) {
 			logger.warn(e.getMessage());
