@@ -3,13 +3,14 @@ package com.carrier.smpp.smsc.response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.carrier.smpp.pdu.response.Handlable;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.pdu.PduResponse;
 
-public class UnhandleResp implements SmscPduResponseHandler {
-	Logger logger = LogManager.getLogger(UnhandleResp.class.getName());
+public class DefaultPduRespHandler implements Handlable<PduAsyncResponse> {
+	Logger logger = LogManager.getLogger(DefaultPduRespHandler.class.getName());
 	@Override
-	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
+	public void handle(PduAsyncResponse pduAsyncResponse) {
 		PduResponse response = pduAsyncResponse.getResponse();
 		logger.info(response);
 	}

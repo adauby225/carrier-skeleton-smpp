@@ -13,8 +13,9 @@ import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
 import com.carrier.smpp.outbound.client.CarrierSmppConnector;
 import com.carrier.smpp.outbound.client.ConnectorConfiguration;
-import com.carrier.smpp.outbound.client.MaxTpsDefault;
+import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
+import com.carrier.smpp.pdu.response.Handlable;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
@@ -28,8 +29,12 @@ public class Binds {
 	public static void main(String[] args) throws SmppInvalidArgumentException, IOException, InterruptedException {
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "127.0.0.1", 34568);
 		// map responseHandlers
-		Map<Integer, SmscPduResponseHandler>respHandlers = new HashMap<>();
-		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
+		Map<Integer, Handlable>submitsmRespStatusHandler = new HashMap<>();
+		Map<Integer, Handlable>respHandlers = new HashMap<>();
+		
+		submitsmRespStatusHandler.put(SmppConstants.STATUS_INVDSTADR,new SubmitSmRespInvalidDestHandler());
+		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
+		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SmscPduResponseHandler(submitsmRespStatusHandler));
 		//map request form smsc
 		Map<Integer, SmscPduRequestHandler>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
@@ -42,7 +47,7 @@ public class Binds {
 		settings.setBindTypes(bindTypes);
 		settings.setThroughput(20);
 		PduRequestSender pduRequestSender = new PduRequestSender();
-		MaxTpsDefault maxTps = new MaxTpsDefault();
+		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
         CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
         		,pduRequestSender,maxTps,reqHandlers,respHandlers);
         connector.connect();

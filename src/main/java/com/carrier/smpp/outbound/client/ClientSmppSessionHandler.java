@@ -1,13 +1,12 @@
 package com.carrier.smpp.outbound.client;
 
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.Logger;
 
+import com.carrier.smpp.pdu.response.Handlable;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandlerFactory;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandlerFactory;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
@@ -19,10 +18,11 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private final String bindType; 
 	private final Logger logger ;
 	private PduQueue pduQueue;
-	private CountDownLatch allRequestResponseReceivedSignal = new CountDownLatch(1);
 	private SmscPduRequestHandlerFactory smscPduReqFactory;
 	private SmscPduResponseHandlerFactory smscPduRespHandlerFactory;
-	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue, Map<Integer, SmscPduRequestHandler> smscReqHandlers, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
+	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue
+			, Map<Integer, SmscPduRequestHandler> smscReqHandlers
+			, Map<Integer, Handlable> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.pduQueue = pduQueue;
@@ -30,7 +30,9 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 		this.smscPduRespHandlerFactory = new SmscPduResponseHandlerFactory(smscResponseHandlers);
 	}
 	
-	public ClientSmppSessionHandler(String bindType,Logger logger, Map<Integer, SmscPduRequestHandler> smscReqHandlers, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
+	public ClientSmppSessionHandler(String bindType,Logger logger
+			, Map<Integer, SmscPduRequestHandler> smscReqHandlers
+			, Map<Integer, Handlable> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.smscPduReqFactory = new SmscPduRequestHandlerFactory(smscReqHandlers);
@@ -58,14 +60,13 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
 		PduResponse resp = pduAsyncResponse.getResponse();
 		logger.info("[response received] : {}",resp);
-		SmscPduResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
-		respHandler.handleResponse(pduAsyncResponse);
+		Handlable respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
+		respHandler.handle(pduAsyncResponse);
 	}
 
 	@Override
 	public void fireChannelUnexpectedlyClosed() {
 		logger.error(bindType +": unexpected close occurred...");
-		allRequestResponseReceivedSignal.countDown();
 	}
 
 

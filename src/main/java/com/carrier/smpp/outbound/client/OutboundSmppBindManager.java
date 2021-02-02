@@ -6,17 +6,15 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 import com.carrier.smpp.executor.ServiceExecutor;
+import com.carrier.smpp.pdu.response.Handlable;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
-import com.cloudhopper.smpp.type.LoggingOptions;
 
 public class OutboundSmppBindManager implements Connection<ConnectorConfiguration> {
 	private static AtomicLong bindIds = new  AtomicLong(1);
@@ -24,10 +22,10 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
-	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
+	private final Map<Integer, Handlable> smscResponseHandlers;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
 			, RequestSender requestSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
-			, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
+			, Map<Integer, Handlable> smscResponseHandlers) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
 		this.requestSender = requestSender;
