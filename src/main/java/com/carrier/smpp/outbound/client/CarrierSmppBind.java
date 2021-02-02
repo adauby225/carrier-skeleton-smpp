@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.pdu.response.Handlable;
+import com.carrier.smpp.pdu.Handler.PduRespHandler;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.carrier.smpp.util.LoggingUtil;
@@ -39,11 +39,11 @@ public class CarrierSmppBind implements Runnable{
 	private RequestSender enquireLinkSender;
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
 	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
-	private final Map<Integer, Handlable> smscResponseHandlers;
+	private final Map<Integer, PduRespHandler> smscResponseHandlers;
 	private DefaultSmppSessionHandler sessionHandler=null;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
 			,RequestSender enquireLinkSender,Map<Integer, SmscPduRequestHandler> smscReqHandlers
-			,Map<Integer, Handlable> smscResponseHandlers,int tps) {
+			,Map<Integer, PduRespHandler> smscResponseHandlers,int tps) {
 
 		this.pduQueue = pduQueue;
 		this.config = config;

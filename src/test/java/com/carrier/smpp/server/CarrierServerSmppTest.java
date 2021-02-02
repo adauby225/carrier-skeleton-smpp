@@ -16,17 +16,17 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carrier.smpp.esme.request.EsmeRequestHandler;
+import com.carrier.smpp.esme.request.EsmePduRequest;
 import com.carrier.smpp.esme.response.EsmeResponseHandler;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.pdu.Handler.PduRequestHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppServerConfiguration;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
-import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
@@ -174,7 +174,7 @@ public class CarrierServerSmppTest {
 	public void testHandleUnbind() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
 	, SmppInvalidArgumentException, RecoverablePduException, HandlerException {
 		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
-		Map<Integer, EsmeRequestHandler>requestHandlers = new HashMap<>();
+		Map<Integer, PduRequestHandler>requestHandlers = new HashMap<>();
 		//handlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
 		requestHandlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandler());
 		
@@ -239,11 +239,11 @@ public class CarrierServerSmppTest {
 
 	}
 	
-	 class SubmitSmHandler implements EsmeRequestHandler {
+	 class SubmitSmHandler implements PduRequestHandler<EsmePduRequest> {
 
 		@Override
-		public PduResponse handleRequest(PduRequest pduRequest, EsmeSmppSession esmeSmppSession) {
-			SubmitSm submitSm = (SubmitSm)pduRequest;
+		public PduResponse handleRequest(EsmePduRequest emseRequest) {
+			SubmitSm submitSm = (SubmitSm)emseRequest.getRequest();
 			SubmitSmResp submitSmResp = submitSm.createResponse();
 			submitSmResp.setMessageId(MESSAGE_ID);
 			return submitSmResp;
@@ -251,11 +251,11 @@ public class CarrierServerSmppTest {
 
 	}
 	
-	 class UnbindHandler implements EsmeRequestHandler {
+	 class UnbindHandler implements PduRequestHandler<EsmePduRequest> {
 
 		@Override
-		public PduResponse handleRequest(PduRequest pduRequest, EsmeSmppSession esmeSmppSession) {
-			Unbind unbind = (Unbind)pduRequest;
+		public PduResponse handleRequest(EsmePduRequest emseRequest) {
+			Unbind unbind = (Unbind)emseRequest.getRequest();
 			return unbind.createResponse();
 		}
 

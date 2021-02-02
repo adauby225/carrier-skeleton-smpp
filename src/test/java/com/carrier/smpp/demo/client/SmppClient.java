@@ -17,7 +17,7 @@ import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.PduQueue;
 import com.carrier.smpp.outbound.client.RequestSender;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
-import com.carrier.smpp.pdu.response.Handlable;
+import com.carrier.smpp.pdu.Handler.PduRespHandler;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
@@ -45,8 +45,8 @@ public class SmppClient {
 		
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
 		//map responseHandlers
-		Map<Integer, Handlable>submitsmRespStatusHandler = new HashMap<>();
-		Map<Integer, Handlable>respHandlers = new HashMap<>();
+		Map<Integer, PduRespHandler>submitsmRespStatusHandler = new HashMap<>();
+		Map<Integer, PduRespHandler>respHandlers = new HashMap<>();
 		
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_INVDSTADR,new SubmitSmRespInvalidDestHandler());
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
@@ -151,7 +151,7 @@ class PduRequestSender implements RequestSender{
 	
 
 }
-class SubmitSmRespStatusOkHandler implements Handlable<PduAsyncResponse>{
+class SubmitSmRespStatusOkHandler implements PduRespHandler<PduAsyncResponse>{
 	private final Logger logger = LogManager.getLogger(SubmitSmRespStatusOkHandler.class);
 	@Override
 	public void handle(PduAsyncResponse pduAsyncResponse) {
@@ -161,7 +161,7 @@ class SubmitSmRespStatusOkHandler implements Handlable<PduAsyncResponse>{
 	
 }
 
-class SubmitSmRespInvalidDestHandler implements Handlable<PduAsyncResponse>{
+class SubmitSmRespInvalidDestHandler implements PduRespHandler<PduAsyncResponse>{
 	private final Logger logger = LogManager.getLogger(SubmitSmRespStatusOkHandler.class);
 	@Override
 	public void handle(PduAsyncResponse pduAsyncResponse) {

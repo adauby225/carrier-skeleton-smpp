@@ -5,10 +5,11 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.esme.request.EsmeRequestHandler;
+import com.carrier.smpp.esme.request.EsmePduRequest;
 import com.carrier.smpp.esme.request.EsmeRequestHandlerFactory;
 import com.carrier.smpp.esme.response.EsmeResponseHandler;
 import com.carrier.smpp.esme.response.EsmeResponseHandlerFactory;
+import com.carrier.smpp.pdu.Handler.PduRequestHandler;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
 import com.cloudhopper.smpp.pdu.PduRequest;
@@ -20,7 +21,8 @@ public class EsmeSmppSessionHandler extends DefaultSmppSessionHandler {
 	private EsmeSmppSession esmeSmppSession;
 	private final EsmeRequestHandlerFactory esmeRequestHandlerFactory;
 	private final EsmeResponseHandlerFactory esmeResponseHandlerFactory;
-	public EsmeSmppSessionHandler(Long sessionId, EsmeSmppSession esmeSmppSession,Map<Integer, EsmeRequestHandler>handlers
+	public EsmeSmppSessionHandler(Long sessionId, EsmeSmppSession esmeSmppSession
+			,Map<Integer, PduRequestHandler>handlers
 			, Map<Integer, EsmeResponseHandler> responseHandlers) {
 		this.sessionId = sessionId;
 		this.esmeSmppSession = esmeSmppSession;
@@ -35,8 +37,9 @@ public class EsmeSmppSessionHandler extends DefaultSmppSessionHandler {
 	@Override
 	public PduResponse firePduRequestReceived(PduRequest pduRequest) {
 		logger.info("[request received] : {}",pduRequest);
-		EsmeRequestHandler esmeRequestHandler = esmeRequestHandlerFactory.getRequestHandler(pduRequest.getCommandId());
-		PduResponse response = esmeRequestHandler.handleRequest(pduRequest,esmeSmppSession);
+		PduRequestHandler<EsmePduRequest> esmeRequestHandler = esmeRequestHandlerFactory
+				.getRequestHandler(pduRequest.getCommandId());
+		PduResponse response = esmeRequestHandler.handleRequest(new EsmePduRequest(pduRequest,esmeSmppSession));
 		logger.info("[response returned] : {}",response);
 		return response;
 		

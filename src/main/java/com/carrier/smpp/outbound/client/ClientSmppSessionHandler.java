@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.pdu.response.Handlable;
+import com.carrier.smpp.pdu.Handler.PduRespHandler;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandlerFactory;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandlerFactory;
@@ -22,7 +22,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private SmscPduResponseHandlerFactory smscPduRespHandlerFactory;
 	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue
 			, Map<Integer, SmscPduRequestHandler> smscReqHandlers
-			, Map<Integer, Handlable> smscResponseHandlers) {
+			, Map<Integer, PduRespHandler> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.pduQueue = pduQueue;
@@ -32,7 +32,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	
 	public ClientSmppSessionHandler(String bindType,Logger logger
 			, Map<Integer, SmscPduRequestHandler> smscReqHandlers
-			, Map<Integer, Handlable> smscResponseHandlers) {
+			, Map<Integer, PduRespHandler> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.smscPduReqFactory = new SmscPduRequestHandlerFactory(smscReqHandlers);
@@ -60,7 +60,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
 		PduResponse resp = pduAsyncResponse.getResponse();
 		logger.info("[response received] : {}",resp);
-		Handlable respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
+		PduRespHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
 		respHandler.handle(pduAsyncResponse);
 	}
 

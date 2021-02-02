@@ -15,7 +15,7 @@ import com.carrier.smpp.outbound.client.CarrierSmppConnector;
 import com.carrier.smpp.outbound.client.ConnectorConfiguration;
 import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
-import com.carrier.smpp.pdu.response.Handlable;
+import com.carrier.smpp.pdu.Handler.PduRespHandler;
 import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
 import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
@@ -29,8 +29,8 @@ public class Binds {
 	public static void main(String[] args) throws SmppInvalidArgumentException, IOException, InterruptedException {
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "127.0.0.1", 34568);
 		// map responseHandlers
-		Map<Integer, Handlable>submitsmRespStatusHandler = new HashMap<>();
-		Map<Integer, Handlable>respHandlers = new HashMap<>();
+		Map<Integer, PduRespHandler>submitsmRespStatusHandler = new HashMap<>();
+		Map<Integer, PduRespHandler>respHandlers = new HashMap<>();
 		
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_INVDSTADR,new SubmitSmRespInvalidDestHandler());
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
