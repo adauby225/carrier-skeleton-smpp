@@ -9,6 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.executor.BindExecutor;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
 import com.carrier.smpp.outbound.client.CarrierSmppConnector;
@@ -17,9 +20,6 @@ import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.PduQueue;
 import com.carrier.smpp.outbound.client.RequestSender;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
-import com.carrier.smpp.pdu.Handler.PduRespHandler;
-import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
@@ -45,14 +45,14 @@ public class SmppClient {
 		
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
 		//map responseHandlers
-		Map<Integer, PduRespHandler>submitsmRespStatusHandler = new HashMap<>();
-		Map<Integer, PduRespHandler>respHandlers = new HashMap<>();
+		Map<Integer, ResponseHandler>submitsmRespStatusHandler = new HashMap<>();
+		Map<Integer, ResponseHandler>respHandlers = new HashMap<>();
 		
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_INVDSTADR,new SubmitSmRespInvalidDestHandler());
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
-		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SmscPduResponseHandler(submitsmRespStatusHandler));
+		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new PduResponseHandler(submitsmRespStatusHandler));
 		//map request form smsc
-		Map<Integer, SmscPduRequestHandler>reqHandlers = new HashMap<>();
+		Map<Integer, RequestHandler>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		settings.setWindowSize(1);
         settings.setName("test.carrier.0");
@@ -151,20 +151,20 @@ class PduRequestSender implements RequestSender{
 	
 
 }
-class SubmitSmRespStatusOkHandler implements PduRespHandler<PduAsyncResponse>{
+class SubmitSmRespStatusOkHandler implements ResponseHandler<PduAsyncResponse>{
 	private final Logger logger = LogManager.getLogger(SubmitSmRespStatusOkHandler.class);
 	@Override
-	public void handle(PduAsyncResponse pduAsyncResponse) {
+	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
 		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
 		logger.info("handling submitSm resp: "+resp);
 	}
 	
 }
 
-class SubmitSmRespInvalidDestHandler implements PduRespHandler<PduAsyncResponse>{
+class SubmitSmRespInvalidDestHandler implements ResponseHandler<PduAsyncResponse>{
 	private final Logger logger = LogManager.getLogger(SubmitSmRespStatusOkHandler.class);
 	@Override
-	public void handle(PduAsyncResponse pduAsyncResponse) {
+	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
 		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
 		logger.info("handling submitSm resp: "+resp);
 	}
@@ -173,10 +173,10 @@ class SubmitSmRespInvalidDestHandler implements PduRespHandler<PduAsyncResponse>
 
 
 
-class deliverSmHandler implements SmscPduRequestHandler {
+class deliverSmHandler implements RequestHandler<PduRequest> {
 	private final Logger logger = LogManager.getLogger(deliverSmHandler.class);
 	@Override
-	public PduResponse handle(PduRequest pduRequest) {
+	public PduResponse handleRequest(PduRequest pduRequest) {
 		DeliverSm deliver = (DeliverSm)pduRequest;
 		logger.info("handling deliverSm: " + deliver);
 		return deliver.createResponse();

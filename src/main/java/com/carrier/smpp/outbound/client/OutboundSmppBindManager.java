@@ -10,22 +10,23 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 import com.carrier.smpp.executor.ServiceExecutor;
-import com.carrier.smpp.pdu.Handler.PduRespHandler;
-import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
+import com.cloudhopper.smpp.pdu.PduRequest;
 
 public class OutboundSmppBindManager implements Connection<ConnectorConfiguration> {
 	private static AtomicLong bindIds = new  AtomicLong(1);
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
-	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
-	private final Map<Integer, PduRespHandler> smscResponseHandlers;
+	private final Map<Integer, RequestHandler> smscReqHandlers;
+	private final Map<Integer, ResponseHandler> smscResponseHandlers;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
-			, RequestSender requestSender, Map<Integer, SmscPduRequestHandler> smscReqHandlers
-			, Map<Integer, PduRespHandler> smscResponseHandlers) {
+			, RequestSender requestSender, Map<Integer, RequestHandler> smscReqHandlers
+			, Map<Integer, ResponseHandler> smscResponseHandlers) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
 		this.requestSender = requestSender;

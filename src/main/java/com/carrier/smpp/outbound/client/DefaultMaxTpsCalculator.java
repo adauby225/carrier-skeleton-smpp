@@ -1,5 +1,7 @@
 package com.carrier.smpp.outbound.client;
 
+import com.carrier.smpp.handler.pdu.request.MaxRequestPerSecond;
+
 public class DefaultMaxTpsCalculator implements MaxRequestPerSecond{
 
 	@Override

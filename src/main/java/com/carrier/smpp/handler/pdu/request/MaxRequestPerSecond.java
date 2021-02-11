@@ -1,4 +1,6 @@
-package com.carrier.smpp.outbound.client;
+package com.carrier.smpp.handler.pdu.request;
+
+import com.carrier.smpp.outbound.client.BindTypes;
 
 public interface MaxRequestPerSecond {
 	/**

@@ -1,10 +1,9 @@
-package com.carrier.smpp.esme.request;
+package com.carrier.smpp.handler.pdu.request;
 
-import com.carrier.smpp.pdu.Handler.PduRequestHandler;
 import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.pdu.PduResponse;
 
-public class DefaultRequestHandler implements PduRequestHandler<EsmePduRequest> {
+public class DefaultRequestHandler implements RequestHandler<EsmePduRequest> {
 
 	@Override
 	public PduResponse handleRequest(EsmePduRequest request) {

@@ -16,11 +16,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carrier.smpp.esme.request.EsmePduRequest;
-import com.carrier.smpp.esme.response.EsmeResponseHandler;
+import com.carrier.smpp.handler.pdu.request.EsmePduRequest;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.carrier.smpp.model.esme.EsmeSmppAccount;
-import com.carrier.smpp.pdu.Handler.PduRequestHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppServerConfiguration;
@@ -173,8 +173,8 @@ public class CarrierServerSmppTest {
 	@Test
 	public void testHandleUnbind() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
 	, SmppInvalidArgumentException, RecoverablePduException, HandlerException {
-		Map<Integer, EsmeResponseHandler> responseHandlers = new HashMap<>();
-		Map<Integer, PduRequestHandler>requestHandlers = new HashMap<>();
+		Map<Integer, ResponseHandler> responseHandlers = new HashMap<>();
+		Map<Integer, RequestHandler>requestHandlers = new HashMap<>();
 		//handlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
 		requestHandlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandler());
 		
@@ -236,10 +236,9 @@ public class CarrierServerSmppTest {
 			configuration.setSystemId("carrier-skeleton");
 			return configuration;
 		}
-
 	}
 	
-	 class SubmitSmHandler implements PduRequestHandler<EsmePduRequest> {
+	 class SubmitSmHandler implements RequestHandler<EsmePduRequest> {
 
 		@Override
 		public PduResponse handleRequest(EsmePduRequest emseRequest) {
@@ -251,7 +250,7 @@ public class CarrierServerSmppTest {
 
 	}
 	
-	 class UnbindHandler implements PduRequestHandler<EsmePduRequest> {
+	 class UnbindHandler implements RequestHandler<EsmePduRequest> {
 
 		@Override
 		public PduResponse handleRequest(EsmePduRequest emseRequest) {

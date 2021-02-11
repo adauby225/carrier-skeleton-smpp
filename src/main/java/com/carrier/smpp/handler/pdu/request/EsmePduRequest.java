@@ -1,4 +1,4 @@
-package com.carrier.smpp.esme.request;
+package com.carrier.smpp.handler.pdu.request;
 
 import com.carrier.smpp.server.EsmeSmppSession;
 import com.cloudhopper.smpp.pdu.PduRequest;

@@ -1,12 +1,12 @@
 package com.carrier.smpp.server;
 
-import com.carrier.smpp.esme.request.EsmePduRequest;
-import com.carrier.smpp.pdu.Handler.PduRequestHandler;
+import com.carrier.smpp.handler.pdu.request.EsmePduRequest;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
 
-public class SubmitSmHandler implements PduRequestHandler<EsmePduRequest> {
+public class SubmitSmHandler implements RequestHandler<EsmePduRequest> {
 	private static final String MESSAGE_ID = "fcc45-523kl-j8ep";
 	@Override
 	public PduResponse handleRequest(EsmePduRequest esmeRequest) {
