@@ -7,9 +7,9 @@ import com.cloudhopper.smpp.pdu.PduRequest;
 
 
 
-public class SmscPduRequestHandlerFactory {
+public class PduRequestHandlerFactory {
 	private Map<Integer, RequestHandler>handlers = new HashMap<>();
-	public SmscPduRequestHandlerFactory(Map<Integer, RequestHandler>handlers) {
+	public PduRequestHandlerFactory(Map<Integer, RequestHandler>handlers) {
 		this.handlers = handlers;
 	}
 

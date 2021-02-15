@@ -15,7 +15,6 @@ import com.carrier.smpp.server.CarrierSmppServerHandler;
 import com.carrier.smpp.server.DefaultCredentialChecker;
 import com.carrier.smpp.server.SmppAccountParamCheckable;
 import com.carrier.smpp.server.DefaultEsmeBindRequestHandler;
-import com.carrier.smpp.server.HandlerException;
 import com.cloudhopper.smpp.SmppConstants;
 
 public class CarrierServerSmppDefaultConfig {

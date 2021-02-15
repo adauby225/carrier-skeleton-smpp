@@ -16,6 +16,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carrier.smpp.demo.server.HandlerException;
 import com.carrier.smpp.handler.pdu.request.EsmePduRequest;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;

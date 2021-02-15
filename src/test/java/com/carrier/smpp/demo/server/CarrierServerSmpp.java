@@ -5,7 +5,6 @@ import static com.carrier.smpp.util.SkeletonExecutors.getMonitorExecutor;
 
 import com.carrier.smpp.server.CarrierSmppServer;
 import com.carrier.smpp.server.CarrierSmppServerHandler;
-import com.carrier.smpp.server.HandlerException;
 
 public class CarrierServerSmpp {
 	

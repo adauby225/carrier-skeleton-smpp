@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
-import com.carrier.smpp.handler.pdu.request.SmscPduRequestHandlerFactory;
+import com.carrier.smpp.handler.pdu.request.PduRequestHandlerFactory;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.handler.pdu.response.PduResponseHandlerFactory;
 import com.cloudhopper.smpp.PduAsyncResponse;
@@ -18,7 +18,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private final String bindType; 
 	private final Logger logger ;
 	private PduQueue pduQueue;
-	private SmscPduRequestHandlerFactory smscPduReqFactory;
+	private PduRequestHandlerFactory smscPduReqFactory;
 	private PduResponseHandlerFactory smscPduRespHandlerFactory;
 	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue
 			, Map<Integer, RequestHandler> smscReqHandlers
@@ -26,7 +26,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.pduQueue = pduQueue;
-		this.smscPduReqFactory = new SmscPduRequestHandlerFactory(smscReqHandlers);
+		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
 		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
 	}
 	
@@ -35,7 +35,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 			, Map<Integer, ResponseHandler> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
-		this.smscPduReqFactory = new SmscPduRequestHandlerFactory(smscReqHandlers);
+		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
 		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
 	}
 
