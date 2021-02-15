@@ -39,7 +39,7 @@ public class EsmeSmppSessionHandler extends DefaultSmppSessionHandler {
 		logger.info("[request received] : {}",pduRequest);
 		RequestHandler esmeRequestHandler = esmeRequestHandlerFactory
 				.getHandler(pduRequest.getCommandId());
-		PduResponse response = esmeRequestHandler.handleRequest(new EsmePduRequest(pduRequest,esmeSmppSession));
+		PduResponse response = (PduResponse) esmeRequestHandler.handleRequest(new EsmePduRequest(pduRequest,esmeSmppSession));
 		logger.info("[response returned] : {}",response);
 		return response;
 		

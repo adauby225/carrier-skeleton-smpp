@@ -239,7 +239,7 @@ public class CarrierServerSmppTest {
 		}
 	}
 	
-	 class SubmitSmHandler implements RequestHandler<EsmePduRequest> {
+	 class SubmitSmHandler implements RequestHandler<EsmePduRequest,PduResponse> {
 
 		@Override
 		public PduResponse handleRequest(EsmePduRequest emseRequest) {
@@ -251,7 +251,7 @@ public class CarrierServerSmppTest {
 
 	}
 	
-	 class UnbindHandler implements RequestHandler<EsmePduRequest> {
+	 class UnbindHandler implements RequestHandler<EsmePduRequest,PduResponse> {
 
 		@Override
 		public PduResponse handleRequest(EsmePduRequest emseRequest) {

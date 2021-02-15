@@ -5,7 +5,7 @@ import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 
-public class SubmitSmHandlerExple implements RequestHandler<EsmePduRequest> {
+public class SubmitSmHandlerExple implements RequestHandler<EsmePduRequest,PduResponse> {
 
 	@Override
 	public PduResponse handleRequest(EsmePduRequest esmeRequest) {

@@ -173,7 +173,7 @@ class SubmitSmRespInvalidDestHandler implements ResponseHandler<PduAsyncResponse
 
 
 
-class deliverSmHandler implements RequestHandler<PduRequest> {
+class deliverSmHandler implements RequestHandler<PduRequest,PduResponse> {
 	private final Logger logger = LogManager.getLogger(deliverSmHandler.class);
 	@Override
 	public PduResponse handleRequest(PduRequest pduRequest) {

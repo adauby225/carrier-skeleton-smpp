@@ -1,7 +1,5 @@
 package com.carrier.smpp.handler.pdu.request;
 
-import com.cloudhopper.smpp.pdu.PduResponse;
-
-public interface RequestHandler<T> {
-	PduResponse handleRequest(T t);
+public interface RequestHandler<T,R> {
+	R handleRequest(T t);
 }

@@ -49,7 +49,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 				, configParamsRepository);
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(TRANSCEIVER
 				, SYSTEM_ID, PASSWORD);
-		assertEquals(SmppConstants.STATUS_OK, defaultEsmeBindRequestHandler.handleRequest(sessionConfiguration));
+		assertEquals(SmppConstants.STATUS_OK, (int)defaultEsmeBindRequestHandler.handleRequest(sessionConfiguration));
 	}
 	
 	@Test
@@ -59,7 +59,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(TRANSCEIVER
 				, "inv_sys_id", PASSWORD);
 		
-		assertEquals(STATUS_INVSYSID, defaultEsmeBindRequestHandler.handleRequest(sessionConfiguration));
+		assertEquals(STATUS_INVSYSID, (int)defaultEsmeBindRequestHandler.handleRequest(sessionConfiguration));
 	}
 	
 	@Test
@@ -68,7 +68,7 @@ public class DefaultSmppSessionRequestHandlerTest {
 				, configParamsRepository);
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(TRANSCEIVER
 				, SYSTEM_ID, "inv_pass");
-		assertEquals(STATUS_INVPASWD, defaultEsmeBindRequestHandler.handleRequest(sessionConfiguration));
+		assertEquals(STATUS_INVPASWD, (int)defaultEsmeBindRequestHandler.handleRequest(sessionConfiguration));
 	}
 	
 	

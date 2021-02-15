@@ -5,6 +5,7 @@ import static com.cloudhopper.smpp.SmppConstants.STATUS_OK;
 
 import com.carrier.smpp.model.esme.EsmeSmppAccount;
 import com.carrier.smpp.pdu.Handlers;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.model.esme.EsmeAccountRepository;
 import com.cloudhopper.smpp.SmppServerHandler;
 import com.cloudhopper.smpp.SmppServerSession;
@@ -14,11 +15,11 @@ import com.cloudhopper.smpp.pdu.BaseBindResp;
 import com.cloudhopper.smpp.type.SmppProcessingException;
 
 public class CarrierSmppServerHandler implements SmppServerHandler{
-	private final BindRequestHandler bindRequestHandler;
+	private final RequestHandler bindRequestHandler;
 	private final EsmeAccountRepository accountRepository;
 	private SessionManager sessionManager = SessionManager.getInstance();
 	private Handlers handlers;
-	public CarrierSmppServerHandler(BindRequestHandler bindRequestHandler
+	public CarrierSmppServerHandler(RequestHandler bindRequestHandler
 			,EsmeAccountRepository accountRepository, Handlers handlers) {
 		super();
 		this.bindRequestHandler = bindRequestHandler;
@@ -29,7 +30,7 @@ public class CarrierSmppServerHandler implements SmppServerHandler{
 	@Override
 	public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration,
 			BaseBind bindRequest) throws SmppProcessingException {
-		int response = bindRequestHandler.handleRequest(sessionConfiguration);
+		int response = (int) bindRequestHandler.handleRequest(sessionConfiguration);
 		if(response == STATUS_OK)
 			return;
 		throw new SmppProcessingException(response, STATUS_MESSAGE_MAP.get(response));

@@ -51,7 +51,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	public PduResponse firePduRequestReceived(PduRequest pduRequest) {
 		logger.info("[request send] : {}",pduRequest);
 		RequestHandler reqHandler = smscPduReqFactory.getHandler(pduRequest.getCommandId());
-		PduResponse response = reqHandler.handleRequest(pduRequest);
+		PduResponse response = (PduResponse) reqHandler.handleRequest(pduRequest);
 		logger.info("[response returned] : {}", response);
 		return response;
 	}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 
 
 
@@ -13,7 +14,7 @@ public class PduRequestHandlerFactory {
 		this.handlers = handlers;
 	}
 
-	public RequestHandler<PduRequest> getHandler(int cmdId) {
+	public RequestHandler<PduRequest,PduResponse> getHandler(int cmdId) {
 		return handlers.getOrDefault(cmdId,new UnhandleRequest());
 	}
 

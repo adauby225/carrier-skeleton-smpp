@@ -5,7 +5,7 @@ import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.pdu.Unbind;
 
-public class UnbindHandlerExple implements RequestHandler<EsmePduRequest> {
+public class UnbindHandlerExple implements RequestHandler<EsmePduRequest,PduResponse> {
 
 	@Override
 	public PduResponse handleRequest(EsmePduRequest esmeRequest) {
