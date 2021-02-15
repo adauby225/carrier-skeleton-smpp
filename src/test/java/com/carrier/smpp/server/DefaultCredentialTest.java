@@ -7,7 +7,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.demo.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
 public class DefaultCredentialTest {
@@ -18,7 +19,7 @@ public class DefaultCredentialTest {
 		DefaultCredentialChecker defaultCredentialChecker =new DefaultCredentialChecker();
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(
 				TRANSCEIVER, SYSTEM_ID, "secret");
-		EsmeSmppAccount account = new EsmeSmppAccount(SYSTEM_ID,"secret");
+		SmppAccount account = new EsmeSmppAccount(SYSTEM_ID,"secret");
 		assertEquals(STATUS_OK, defaultCredentialChecker.check(sessionConfiguration, account)); 
 	}
 	
@@ -27,7 +28,7 @@ public class DefaultCredentialTest {
 		DefaultCredentialChecker defaultCredentialChecker =new DefaultCredentialChecker();
 		SmppSessionConfiguration sessionConfiguration = new SmppSessionConfiguration(
 				TRANSCEIVER, "invalid", "secret");
-		EsmeSmppAccount account = new EsmeSmppAccount(SYSTEM_ID, "secret");
+		SmppAccount account = new EsmeSmppAccount(SYSTEM_ID, "secret");
 		assertEquals(STATUS_INVSYSID, defaultCredentialChecker.check(sessionConfiguration, account));
 	}
 }

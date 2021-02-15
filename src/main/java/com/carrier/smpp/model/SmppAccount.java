@@ -1,8 +1,8 @@
-package com.carrier.smpp.model.esme;
+package com.carrier.smpp.model;
 
 import com.carrier.smpp.util.Values;
 
-public class EsmeSmppAccount {
+public abstract class SmppAccount {
 	private Long id;
 	private String name;
 	protected String systemId;
@@ -12,24 +12,24 @@ public class EsmeSmppAccount {
 	private int tps=Values.DEFAULT_TPS;
 	
 	
-	public EsmeSmppAccount(Long id, String systemId, String password) {
+	public SmppAccount(Long id, String systemId, String password) {
 		this.id = id;
 		this.systemId = systemId;
 		this.password = password;
 	}
 	
-	public EsmeSmppAccount(String systemId, String password) {
+	public SmppAccount(String systemId, String password) {
 		this.systemId = systemId;
 		this.password = password;
 	}
 	
-	public EsmeSmppAccount(String systemId, String password,int bindMax) {
+	public SmppAccount(String systemId, String password,int bindMax) {
 		this.systemId = systemId;
 		this.password = password;
 		this.bindMax = bindMax;
 	}
 
-	public EsmeSmppAccount() {} 
+	public SmppAccount() {} 
 	
 	
 	public Long getId() {

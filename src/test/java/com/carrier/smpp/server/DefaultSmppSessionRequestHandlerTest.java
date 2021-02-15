@@ -11,8 +11,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.carrier.smpp.model.esme.EsmeAccountRepository;
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.demo.EsmeSmppAccount;
+import com.carrier.smpp.handler.pdu.request.DefaultEsmeBindRequestHandler;
+import com.carrier.smpp.model.SmppAccount;
+import com.carrier.smpp.model.SmppAccountRepository;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
@@ -20,19 +22,19 @@ import com.cloudhopper.smpp.SmppSessionConfiguration;
 public class DefaultSmppSessionRequestHandlerTest {
 	private static final String SYSTEM_ID = "carrierId";
 	private static final String PASSWORD = "carrier-pass";
-	private SmppAccountParamCheckable systemIdParameter = new  SmppAccountParamCheckable() {
+	private SmppAccountParamChecker systemIdParameter = new  SmppAccountParamChecker() {
 		
 		@Override
-		public int check(SmppSessionConfiguration sessionConfiguration, EsmeSmppAccount configParams) {
+		public int check(SmppSessionConfiguration sessionConfiguration, SmppAccount configParams) {
 			String systemId = sessionConfiguration.getSystemId();
 			if(!systemId.equals(configParams.getSystemId()))
 				return STATUS_INVSYSID;
 			return STATUS_OK;
 		}
 	};
-	private SmppAccountParamCheckable passwordParameter = new SmppAccountParamCheckable() {
+	private SmppAccountParamChecker passwordParameter = new SmppAccountParamChecker() {
 		@Override
-		public int check(SmppSessionConfiguration sessionConfiguration, EsmeSmppAccount configParams) {
+		public int check(SmppSessionConfiguration sessionConfiguration, SmppAccount configParams) {
 			String password = sessionConfiguration.getPassword();
 			if(!password.equals(configParams.getPassword()))
 				return SmppConstants.STATUS_INVPASWD;
@@ -40,8 +42,8 @@ public class DefaultSmppSessionRequestHandlerTest {
 		}
 	};
 	
-	EsmeAccountRepository configParamsRepository = (smppSessionConfig)-> new EsmeSmppAccount(SYSTEM_ID, PASSWORD);
-	private List<SmppAccountParamCheckable>parameters = Arrays.asList(systemIdParameter,passwordParameter);
+	SmppAccountRepository configParamsRepository = (smppSessionConfig)-> new EsmeSmppAccount(SYSTEM_ID, PASSWORD);
+	private List<SmppAccountParamChecker>parameters = Arrays.asList(systemIdParameter,passwordParameter);
 	
 	@Test
 	public void testHandleRequestStatusOk() {

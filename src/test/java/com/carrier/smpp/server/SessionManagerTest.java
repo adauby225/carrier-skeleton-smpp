@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
 
 public class SessionManagerTest {
 
@@ -23,8 +23,8 @@ public class SessionManagerTest {
 		long sessionId0 = 1203;
 		long sessionId1 = 1204;
 
-		EsmeSmppSession session0 = new EsmeSmppSession(sessionId0, null, new EsmeSmppAccount());
-		EsmeSmppSession session1 = new EsmeSmppSession(sessionId1, null, new EsmeSmppAccount());
+		EsmeSmppSession session0 = new EsmeSmppSession(sessionId0, null, new EsmeAccount());
+		EsmeSmppSession session1 = new EsmeSmppSession(sessionId1, null, new EsmeAccount());
 		SessionManager sessionManager = SessionManager.getInstance();
 		assertEquals(0, sessionManager.sessionsSize());
 		sessionManager.addNewSession(sessionId0, session0);
@@ -36,8 +36,8 @@ public class SessionManagerTest {
 	public void testRemoveSession() {
 		long sessionId0 = 1203;
 		long sessionId1 = 1204;
-		EsmeSmppSession session0 = new EsmeSmppSession(sessionId0, null, new EsmeSmppAccount());
-		EsmeSmppSession session1 = new EsmeSmppSession(sessionId1, null, new EsmeSmppAccount());
+		EsmeSmppSession session0 = new EsmeSmppSession(sessionId0, null, new EsmeAccount());
+		EsmeSmppSession session1 = new EsmeSmppSession(sessionId1, null, new EsmeAccount());
 		SessionManager sessionManager = SessionManager.getInstance();
 		assertEquals(0, sessionManager.sessionsSize());
 		sessionManager.addNewSession(sessionId0, session0);
@@ -46,4 +46,23 @@ public class SessionManagerTest {
 
 		assertEquals(1, sessionManager.sessionsSize());
 	}
+}
+class EsmeAccount extends SmppAccount{
+
+	public EsmeAccount() {
+		super();
+	}
+
+	public EsmeAccount(Long id, String systemId, String password) {
+		super(id, systemId, password);
+	}
+
+	public EsmeAccount(String systemId, String password, int bindMax) {
+		super(systemId, password, bindMax);
+	}
+
+	public EsmeAccount(String systemId, String password) {
+		super(systemId, password);
+	}
+	
 }

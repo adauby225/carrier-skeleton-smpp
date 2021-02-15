@@ -1,6 +1,6 @@
 package com.carrier.smpp.server;
 
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
 import com.cloudhopper.smpp.SmppSession;
 
 public class EsmeSmppSession {
@@ -8,15 +8,15 @@ public class EsmeSmppSession {
 	private final SmppSession smppSession;
 	private long unbindTimeout=DEFAULT_UNBIND_TIMEOUT;
 	private long id;
-	private EsmeSmppAccount account;
-	public EsmeSmppSession(long id, SmppSession smppSession, EsmeSmppAccount account,long unbindTimeout) {
+	private SmppAccount account;
+	public EsmeSmppSession(long id, SmppSession smppSession, SmppAccount account,long unbindTimeout) {
 		this.id = id;
 		this.smppSession = smppSession;
 		this.account = account;
 		this.unbindTimeout = unbindTimeout;
 	}
 
-	public EsmeSmppSession(long id, SmppSession smppSession,EsmeSmppAccount account) {
+	public EsmeSmppSession(long id, SmppSession smppSession,SmppAccount account) {
 		this.id = id;
 		this.smppSession = smppSession;
 		this.account = account;
@@ -35,7 +35,7 @@ public class EsmeSmppSession {
 	}
 
 
-	public EsmeSmppAccount getAccount() {
+	public SmppAccount getAccount() {
 		return account;
 	}
 

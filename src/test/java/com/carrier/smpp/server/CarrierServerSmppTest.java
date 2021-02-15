@@ -16,12 +16,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carrier.smpp.demo.EsmeSmppAccount;
 import com.carrier.smpp.demo.server.HandlerException;
+import com.carrier.smpp.handler.pdu.request.DefaultEsmeBindRequestHandler;
 import com.carrier.smpp.handler.pdu.request.EsmePduRequest;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
-import com.carrier.smpp.model.esme.EsmeAccountRepository;
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
+import com.carrier.smpp.model.SmppAccountRepository;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppServerConfiguration;
@@ -46,13 +48,13 @@ public class CarrierServerSmppTest {
 	private static final String PASSWD = "passwd01";
 	private static final String MESSAGE_ID = "fcc45-523kl-j8ep";
 	private PduhandlersTester pduHandlers = new PduhandlersTester();
-	private class EsmeAccountRepTest implements EsmeAccountRepository{
-		final EsmeSmppAccount account;
-		private EsmeAccountRepTest(EsmeSmppAccount account) {
+	private class EsmeAccountRepTest implements SmppAccountRepository<SmppSessionConfiguration>{
+		final SmppAccount account;
+		private EsmeAccountRepTest(SmppAccount account) {
 			this.account = account;
 		}
 		@Override
-		public EsmeSmppAccount find(SmppSessionConfiguration sessionConfig) {
+		public SmppAccount find(SmppSessionConfiguration sessionConfig) {
 			return account;
 		}
 	}
@@ -67,7 +69,7 @@ public class CarrierServerSmppTest {
 	@Test
 	public void testSessionOk() throws Exception{
 		
-		List<SmppAccountParamCheckable>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
+		List<SmppAccountParamChecker>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
@@ -98,7 +100,7 @@ public class CarrierServerSmppTest {
 	@Test
 	public void testInvalidSystemId() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
 	, HandlerException {
-		List<SmppAccountParamCheckable>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
+		List<SmppAccountParamChecker>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount("WRONG_SYS_ID", PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
@@ -123,7 +125,7 @@ public class CarrierServerSmppTest {
 	public void testInvalidPassword() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException, InterruptedException
 	, HandlerException {
 		
-		List<SmppAccountParamCheckable>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
+		List<SmppAccountParamChecker>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, "bad_passwd")))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
@@ -148,7 +150,7 @@ public class CarrierServerSmppTest {
 	public void testHandleSubmitSm() throws SmppBindException, SmppTimeoutException, SmppChannelException, UnrecoverablePduException
 	, InterruptedException, SmppInvalidArgumentException, RecoverablePduException, HandlerException {
 		
-		List<SmppAccountParamCheckable>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
+		List<SmppAccountParamChecker>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
@@ -179,7 +181,7 @@ public class CarrierServerSmppTest {
 		//handlers.put(SmppConstants.CMD_ID_SUBMIT_SM, new SubmitSmHandler());
 		requestHandlers.put(SmppConstants.CMD_ID_UNBIND, new UnbindHandler());
 		
-		List<SmppAccountParamCheckable>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
+		List<SmppAccountParamChecker>parameterCheckers = Arrays.asList(new DefaultCredentialChecker());
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);

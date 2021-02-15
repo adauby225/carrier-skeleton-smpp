@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
@@ -19,7 +19,7 @@ public class BindMaxCheckerTest {
 	private static final long SESSION_0 = 0;
 	private static final long SESSION_1 = 1;
 	private static final long SESSION_2 = 2;
-	private EsmeSmppAccount smppAccount = new EsmeSmppAccount(SYSTEM_ID, PASSWORD,BIND_MAX);
+	private SmppAccount smppAccount = new EsmeSmppAccount(SYSTEM_ID, PASSWORD,BIND_MAX);
 	private EsmeSmppSession session0 = new EsmeSmppSession(SESSION_0, null, smppAccount);
 	private EsmeSmppSession session1 = new EsmeSmppSession(SESSION_1, null, smppAccount);
 	private EsmeSmppSession session2 = new EsmeSmppSession(SESSION_2, null, smppAccount);
@@ -73,4 +73,28 @@ public class BindMaxCheckerTest {
 		return configuration;
 	}
 
+}
+
+class EsmeSmppAccount extends SmppAccount{
+
+	public EsmeSmppAccount() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public EsmeSmppAccount(Long id, String systemId, String password) {
+		super(id, systemId, password);
+		// TODO Auto-generated constructor stub
+	}
+
+	public EsmeSmppAccount(String systemId, String password, int bindMax) {
+		super(systemId, password, bindMax);
+		// TODO Auto-generated constructor stub
+	}
+
+	public EsmeSmppAccount(String systemId, String password) {
+		super(systemId, password);
+		// TODO Auto-generated constructor stub
+	}
+	
 }
