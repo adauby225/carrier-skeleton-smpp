@@ -1,13 +1,13 @@
 package com.carrier.smpp.demo.server;
 
-import com.carrier.smpp.server.BindRequestHandler;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
-public class EsmeBindRequestHandlerExple implements BindRequestHandler {
+public class EsmeBindRequestHandlerExple implements RequestHandler<SmppSessionConfiguration,Integer> {
 
 	@Override
-	public int handleRequest(SmppSessionConfiguration sessionConfiguration) {
+	public Integer handleRequest(SmppSessionConfiguration sessionConfiguration) {
 		return SmppConstants.STATUS_OK;
 	}
 

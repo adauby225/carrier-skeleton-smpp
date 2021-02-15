@@ -1,4 +1,4 @@
-package com.carrier.smpp.esme.request;
+package com.carrier.smpp.util;
 
 import static com.carrier.smpp.util.Values.ONE_SECOND_IN_MILLIS;
 

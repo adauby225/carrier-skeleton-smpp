@@ -1,14 +1,7 @@
 package com.carrier.smpp.outbound.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.carrier.smpp.model.esme.EsmeAccountRepository;
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
-import com.cloudhopper.smpp.SmppSessionConfiguration;
-
 public class CarrierSmppConnectorTest {
-	private final static Logger logger = LogManager.getLogger(CarrierSmppConnectorTest.class);
+	/*private final static Logger logger = LogManager.getLogger(CarrierSmppConnectorTest.class);
 	public static final int PORT = 2785;
 	public static final String SYSTEMID = "smppclient1";
 	public static final String PASSWORD = "password";
@@ -24,7 +17,7 @@ public class CarrierSmppConnectorTest {
 			return account;
 		}
 	}
-	/*@Before
+	@Before
 	public void resetSessionManager() throws NoSuchFieldException, SecurityException, IllegalArgumentException
 	, IllegalAccessException {
 		Field instance = SessionManager.class.getDeclaredField("instance");
@@ -53,7 +46,7 @@ public class CarrierSmppConnectorTest {
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
 		PduRequestSender pduRequestSender = new PduRequestSender();
-		MaxTpsDefault maxTps = new MaxTpsDefault();
+		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
 
 		BindTypes bindTypes = new BindTypes();
 		CarrierSmppConnector connector = new CarrierSmppConnector(connectorConfig,BindExecutor::runBind
@@ -129,7 +122,8 @@ class PduRequestSender implements RequestSender{
 	}
 	
 	public boolean sendMessage(SmppSession session, int maxToSend
-			,boolean canSend,PduQueue pduQueue) throws UnrecoverablePduException, SmppChannelException,InterruptedException {
+			,boolean canSend,PduQueue pduQueue) throws UnrecoverablePduException, SmppChannelException
+	,InterruptedException {
 		PduRequest asynchronSubmit=null;
 		boolean submited=false;
 		try {
@@ -161,10 +155,10 @@ class PduRequestSender implements RequestSender{
 		
 	}
 }
-class SubmitSmRespHandler implements SmscPduResponseHandler{
+class SubmitSmRespHandler implements Handlable<PduAsyncResponse>{
 	private final Logger logger = LogManager.getLogger(SubmitSmRespHandler.class);
 	@Override
-	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
+	public void handle(PduAsyncResponse pduAsyncResponse) {
 		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
 		logger.info("handling submitSm resp: "+resp);
 	}

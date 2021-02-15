@@ -1,13 +1,14 @@
 package com.carrier.smpp.demo.server;
 
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.demo.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
+import com.carrier.smpp.model.SmppAccountRepository;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
-import com.carrier.smpp.model.esme.EsmeAccountRepository;
 
-public class EsmeAccountRepositoryExple implements EsmeAccountRepository {
+public class EsmeAccountRepositoryExple implements SmppAccountRepository<SmppSessionConfiguration> {
 
 	@Override
-	public EsmeSmppAccount find(SmppSessionConfiguration sessionConfig) {
+	public SmppAccount find(SmppSessionConfiguration sessionConfig) {
 		return new EsmeSmppAccount();
 	}
 
