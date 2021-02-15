@@ -9,16 +9,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.executor.BindExecutor;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
 import com.carrier.smpp.outbound.client.CarrierSmppConnector;
 import com.carrier.smpp.outbound.client.ConnectorConfiguration;
-import com.carrier.smpp.outbound.client.MaxTpsDefault;
+import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.PduQueue;
 import com.carrier.smpp.outbound.client.RequestSender;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
-import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
@@ -43,11 +44,15 @@ public class SmppClient {
 	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
 		
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
-		// map responseHandlers
-		Map<Integer, SmscPduResponseHandler>respHandlers = new HashMap<>();
-		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new SubmitSmRespHandler());
+		//map responseHandlers
+		Map<Integer, ResponseHandler>submitsmRespStatusHandler = new HashMap<>();
+		Map<Integer, ResponseHandler>respHandlers = new HashMap<>();
+		
+		submitsmRespStatusHandler.put(SmppConstants.STATUS_INVDSTADR,new SubmitSmRespInvalidDestHandler());
+		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
+		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new PduResponseHandler(submitsmRespStatusHandler));
 		//map request form smsc
-		Map<Integer, SmscPduRequestHandler>reqHandlers = new HashMap<>();
+		Map<Integer, RequestHandler>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		settings.setWindowSize(1);
         settings.setName("test.carrier.0");
@@ -57,7 +62,7 @@ public class SmppClient {
 		BindTypes bindTypes = new BindTypes(0,1,1);
 		settings.setBindTypes(bindTypes);
 		PduRequestSender pduRequestSender = new PduRequestSender();
-		MaxTpsDefault maxTps = new MaxTpsDefault();
+		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
         CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
         		,pduRequestSender, maxTps,reqHandlers,respHandlers);
         connector.connect();
@@ -74,7 +79,6 @@ public class SmppClient {
         sms.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
         connector.addRequestFirst(sms);
         List<CarrierSmppBind>binds = connector.getBinds();
-        boolean isBound=false;
         for(CarrierSmppBind bind: binds)
         	logger.info("bind is bound: " + bind.isUp());
         
@@ -147,8 +151,8 @@ class PduRequestSender implements RequestSender{
 	
 
 }
-class SubmitSmRespHandler implements SmscPduResponseHandler{
-	private final Logger logger = LogManager.getLogger(SubmitSmRespHandler.class);
+class SubmitSmRespStatusOkHandler implements ResponseHandler<PduAsyncResponse>{
+	private final Logger logger = LogManager.getLogger(SubmitSmRespStatusOkHandler.class);
 	@Override
 	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
 		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
@@ -157,10 +161,22 @@ class SubmitSmRespHandler implements SmscPduResponseHandler{
 	
 }
 
-class deliverSmHandler implements SmscPduRequestHandler {
+class SubmitSmRespInvalidDestHandler implements ResponseHandler<PduAsyncResponse>{
+	private final Logger logger = LogManager.getLogger(SubmitSmRespStatusOkHandler.class);
+	@Override
+	public void handleResponse(PduAsyncResponse pduAsyncResponse) {
+		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
+		logger.info("handling submitSm resp: "+resp);
+	}
+	
+}
+
+
+
+class deliverSmHandler implements RequestHandler<PduRequest,PduResponse> {
 	private final Logger logger = LogManager.getLogger(deliverSmHandler.class);
 	@Override
-	public PduResponse handle(PduRequest pduRequest) {
+	public PduResponse handleRequest(PduRequest pduRequest) {
 		DeliverSm deliver = (DeliverSm)pduRequest;
 		logger.info("handling deliverSm: " + deliver);
 		return deliver.createResponse();

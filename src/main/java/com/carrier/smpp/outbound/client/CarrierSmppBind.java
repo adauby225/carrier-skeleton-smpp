@@ -8,16 +8,19 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
 import com.carrier.smpp.util.LoggingUtil;
 import com.carrier.smpp.util.Messages;
 import com.carrier.smpp.util.ThreadUtil;
+import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
+import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppTimeoutException;
 import com.cloudhopper.smpp.type.UnrecoverablePduException;
@@ -36,12 +39,12 @@ public class CarrierSmppBind implements Runnable{
 	private int tps;
 	private RequestSender enquireLinkSender;
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
-	private final Map<Integer, SmscPduRequestHandler> smscReqHandlers;
-	private final Map<Integer, SmscPduResponseHandler> smscResponseHandlers;
+	private final Map<Integer, RequestHandler> smscReqHandlers;
+	private final Map<Integer, ResponseHandler> smscResponseHandlers;
 	private DefaultSmppSessionHandler sessionHandler=null;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
-			,RequestSender enquireLinkSender,Map<Integer, SmscPduRequestHandler> smscReqHandlers
-			,Map<Integer, SmscPduResponseHandler> smscResponseHandlers,int tps) {
+			,RequestSender enquireLinkSender,Map<Integer, RequestHandler> smscReqHandlers
+			,Map<Integer, ResponseHandler> smscResponseHandlers,int tps) {
 
 		this.pduQueue = pduQueue;
 		this.config = config;
@@ -100,7 +103,8 @@ public class CarrierSmppBind implements Runnable{
 	}
 
 	public void intialize() {
-		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers,smscResponseHandlers);
+		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers
+				,smscResponseHandlers);
 	}
 	private void connect() throws SmppTimeoutException,
 	SmppChannelException, UnrecoverablePduException, InterruptedException {

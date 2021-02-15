@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.carrier.smpp.esme.request.RequestCounter;
+import com.carrier.smpp.util.RequestCounter;
 
 public class RequestCounterTest {
 	private int authorizedTps = 100;

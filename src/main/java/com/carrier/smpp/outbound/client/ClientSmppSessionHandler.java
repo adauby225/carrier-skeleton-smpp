@@ -1,14 +1,13 @@
 package com.carrier.smpp.outbound.client;
 
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
-import com.carrier.smpp.smsc.request.SmscPduRequestHandlerFactory;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandlerFactory;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.request.PduRequestHandlerFactory;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.handler.pdu.response.PduResponseHandlerFactory;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
 import com.cloudhopper.smpp.pdu.EnquireLink;
@@ -19,22 +18,25 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private final String bindType; 
 	private final Logger logger ;
 	private PduQueue pduQueue;
-	private CountDownLatch allRequestResponseReceivedSignal = new CountDownLatch(1);
-	private SmscPduRequestHandlerFactory smscPduReqFactory;
-	private SmscPduResponseHandlerFactory smscPduRespHandlerFactory;
-	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue, Map<Integer, SmscPduRequestHandler> smscReqHandlers, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
+	private PduRequestHandlerFactory smscPduReqFactory;
+	private PduResponseHandlerFactory smscPduRespHandlerFactory;
+	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue
+			, Map<Integer, RequestHandler> smscReqHandlers
+			, Map<Integer, ResponseHandler> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.pduQueue = pduQueue;
-		this.smscPduReqFactory = new SmscPduRequestHandlerFactory(smscReqHandlers);
-		this.smscPduRespHandlerFactory = new SmscPduResponseHandlerFactory(smscResponseHandlers);
+		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
+		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
 	}
 	
-	public ClientSmppSessionHandler(String bindType,Logger logger, Map<Integer, SmscPduRequestHandler> smscReqHandlers, Map<Integer, SmscPduResponseHandler> smscResponseHandlers) {
+	public ClientSmppSessionHandler(String bindType,Logger logger
+			, Map<Integer, RequestHandler> smscReqHandlers
+			, Map<Integer, ResponseHandler> smscResponseHandlers) {
 		this.bindType = bindType;
 		this.logger = logger;
-		this.smscPduReqFactory = new SmscPduRequestHandlerFactory(smscReqHandlers);
-		this.smscPduRespHandlerFactory = new SmscPduResponseHandlerFactory(smscResponseHandlers);
+		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
+		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
 	}
 
 	@Override
@@ -48,8 +50,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	@Override
 	public PduResponse firePduRequestReceived(PduRequest pduRequest) {
 		logger.info("[request send] : {}",pduRequest);
-		SmscPduRequestHandler reqHandler = smscPduReqFactory.getHandler(pduRequest.getCommandId());
-		PduResponse response = reqHandler.handle(pduRequest);
+		RequestHandler reqHandler = smscPduReqFactory.getHandler(pduRequest.getCommandId());
+		PduResponse response = (PduResponse) reqHandler.handleRequest(pduRequest);
 		logger.info("[response returned] : {}", response);
 		return response;
 	}
@@ -58,14 +60,13 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
 		PduResponse resp = pduAsyncResponse.getResponse();
 		logger.info("[response received] : {}",resp);
-		SmscPduResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
+		ResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
 		respHandler.handleResponse(pduAsyncResponse);
 	}
 
 	@Override
 	public void fireChannelUnexpectedlyClosed() {
 		logger.error(bindType +": unexpected close occurred...");
-		allRequestResponseReceivedSignal.countDown();
 	}
 
 

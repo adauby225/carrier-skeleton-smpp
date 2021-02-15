@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.carrier.smpp.model.esme.EsmeSmppAccount;
+import com.carrier.smpp.model.SmppAccount;
 
 public final class SessionManager {
 	private static SessionManager instance;
@@ -55,7 +55,7 @@ public final class SessionManager {
 			return esmeSession;
 		}
 		for(EsmeSmppSession session : sessions.values()) {
-			EsmeSmppAccount smppAccount = session.getAccount();
+			SmppAccount smppAccount = session.getAccount();
 			if(systemId.equals(smppAccount.getSystemId())) {
 				readLock.unlock();
 				return Optional.of(session);

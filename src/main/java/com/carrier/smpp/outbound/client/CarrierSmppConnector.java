@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.carrier.smpp.executor.ServiceExecutor;
-import com.carrier.smpp.smsc.request.SmscPduRequestHandler;
-import com.carrier.smpp.smsc.response.SmscPduResponseHandler;
+import com.carrier.smpp.handler.pdu.request.MaxRequestPerSecond;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.pdu.PduRequest;
 
@@ -25,7 +26,7 @@ public class CarrierSmppConnector {
 	
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
-			,Map<Integer, SmscPduRequestHandler>smscReqHandlers,Map<Integer, SmscPduResponseHandler>smscresponseHandlers) {
+			,Map<Integer, RequestHandler>smscReqHandlers,Map<Integer, ResponseHandler>smscresponseHandlers) {
 		this.connectorConfig = connectorConfig;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
 				,smscresponseHandlers);
