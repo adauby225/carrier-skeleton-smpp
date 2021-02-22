@@ -19,7 +19,7 @@ public class PduHandlersDemo implements Handlers {
 		requestHandlers.put(CMD_ID_UNBIND, new UnbindHandlerExple());
 	}
 	@Override
-	public Map<Integer, RequestHandler> getrequestHandlers() {
+	public Map<Integer, RequestHandler> getRequestHandlers() {
 		return requestHandlers;
 	}
 

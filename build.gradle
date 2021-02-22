@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.carrier.smpp'
-version = '1.0.0'
+version = '1.0.2'
 sourceCompatibility = '1.8'
 
 
@@ -29,7 +29,7 @@ dependencies {
 	implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.12.1', ext: 'pom'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
-	implementation 'com.github.Adauby:cloudhopper-smpp:04a3959'
+	implementation 'com.github.adauby225:cloudhopper-smpp:04a3959'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 	
 	testImplementation group: 'junit', name: 'junit', version: '4.12'

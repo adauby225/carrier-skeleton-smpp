@@ -6,7 +6,7 @@ import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 
 public interface Handlers {
-	Map<Integer, RequestHandler>getrequestHandlers();
+	Map<Integer, RequestHandler>getRequestHandlers();
 	Map<Integer, ResponseHandler> getResponseHandlers();
 
 }

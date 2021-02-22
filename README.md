@@ -13,7 +13,25 @@ carrier-skeleton-smpp is Library build on top of cloudhopper.
  * Provide abstract handlers for SMPP requests
  * Provide abstract handlers for SMPP responses 
  
- This library is made to facilitate developpement of a SMPP gateway.
+ This library is made to facilitate development of a SMPP gateway.
  
- 
-	
+## Installation
+
+```
+repositories {
+	maven { url 'https://jitpack.io'}	
+}
+
+dependencies {
+	implementation 'com.github.adauby225:carrier-skeleton-smpp:1.0.2'
+}
+```
+
+
+## Demo Code / Tutorials
+
+There are some examples of how to use this library:
+
+```
+src/test/java/com/carrier/smpp/demo
+```
