@@ -42,12 +42,12 @@ import com.cloudhopper.smpp.util.SmppSessionUtil;
 public class SmppClient {
 	private static final Logger logger = LogManager.getLogger(SmppClient.class);
 	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
-		
+
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
 		//map responseHandlers
 		Map<Integer, ResponseHandler>submitsmRespStatusHandler = new HashMap<>();
 		Map<Integer, ResponseHandler>respHandlers = new HashMap<>();
-		
+
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_INVDSTADR,new SubmitSmRespInvalidDestHandler());
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new PduResponseHandler(submitsmRespStatusHandler));
@@ -55,44 +55,48 @@ public class SmppClient {
 		Map<Integer, RequestHandler>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		settings.setWindowSize(1);
-        settings.setName("test.carrier.0");
-        settings.setHost("127.0.0.1");
-        
-        
+		settings.setName("test.carrier.0");
+		settings.setHost("localhost");
+		settings.setRemotePort(34568);
+		settings.setThroughput(100);
+
+
 		BindTypes bindTypes = new BindTypes(0,1,1);
 		settings.setBindTypes(bindTypes);
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
-        CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
-        		,pduRequestSender, maxTps,reqHandlers,respHandlers);
-        connector.connect();
-        String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
-        byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
-        SubmitSm sms = new SubmitSm();
-        Address sourceAddress = new Address();
-        Address destAddress = new Address();
-        sourceAddress.setAddress("SENDER");
-        destAddress.setAddress("22544404040");
-        sms.setSourceAddress(sourceAddress);
-        sms.setDestAddress(destAddress);
-        sms.setShortMessage(textBytes);
-        sms.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
-        connector.addRequestFirst(sms);
-        List<CarrierSmppBind>binds = connector.getBinds();
-        for(CarrierSmppBind bind: binds)
-        	logger.info("bind is bound: " + bind.isUp());
-        
-        
-        logger.info("Press any key to unbind and close sessions");
-        System.in.read();
-        
-        connector.disconnect();
-        BindExecutor.stopAll();
-        SharedClientBootstrap sharedClientBootStrap = SharedClientBootstrap.getInstance();
-        sharedClientBootStrap.stopClientBootStrap();
-	
+		CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
+				,pduRequestSender, maxTps,reqHandlers,respHandlers);
+		String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
+		byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
+		//for(int i=0;i<=1000000;i++) {
+			SubmitSm sms = new SubmitSm();
+			Address sourceAddress = new Address();
+			Address destAddress = new Address();
+			sourceAddress.setAddress("SENDER");
+			destAddress.setAddress("22544404040");
+			sms.setSourceAddress(sourceAddress);
+			sms.setDestAddress(destAddress);
+			sms.setShortMessage(textBytes);
+			sms.setRegisteredDelivery((byte)0);
+			connector.addRequestFirst(sms);
+		//}
+		connector.connect();
+		List<CarrierSmppBind>binds = connector.getBinds();
+		for(CarrierSmppBind bind: binds)
+			logger.info("bind is bound: " + bind.isUp());
+
+
+		logger.info("Press any key to unbind and close sessions");
+		System.in.read();
+
+		connector.disconnect();
+		BindExecutor.stopAll();
+		SharedClientBootstrap sharedClientBootStrap = SharedClientBootstrap.getInstance();
+		sharedClientBootStrap.stopClientBootStrap();
+
 	}
-	
+
 }
 
 class PduRequestSender implements RequestSender{
@@ -101,15 +105,15 @@ class PduRequestSender implements RequestSender{
 	public void send(SmppSession session, PduQueue pduQueue, int tps) throws InterruptedException {
 		if(session.isBound() && !pduQueue.isEmpty()) {
 			try {
-			SmppSessionConfiguration config=  session.getConfiguration();
-			sendMessage(session,tps,canSubmit(config.getType()),pduQueue);
+				SmppSessionConfiguration config=  session.getConfiguration();
+				sendMessage(session,tps,canSubmit(config.getType()),pduQueue);
 			}catch(UnrecoverablePduException  | SmppChannelException e) {
 				SmppSessionUtil.close(session);
 			}
 		}
-		
+
 	}
-	
+
 	public boolean sendMessage(SmppSession session, int maxToSend
 			,boolean canSend,PduQueue pduQueue) throws UnrecoverablePduException, SmppChannelException,InterruptedException {
 		PduRequest asynchronSubmit=null;
@@ -135,7 +139,7 @@ class PduRequestSender implements RequestSender{
 
 		return submited;
 	}
-	
+
 	public boolean canSubmit(SmppBindType type) {
 		return type.equals(SmppBindType.TRANSCEIVER)||type.equals(SmppBindType.TRANSMITTER);
 	}
@@ -143,12 +147,12 @@ class PduRequestSender implements RequestSender{
 	@Override
 	public void send(SmppSession session, int requestInterval) throws InterruptedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
-	
-	
+
+
+
 
 }
 class SubmitSmRespStatusOkHandler implements ResponseHandler<PduAsyncResponse>{
@@ -158,7 +162,7 @@ class SubmitSmRespStatusOkHandler implements ResponseHandler<PduAsyncResponse>{
 		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
 		logger.info("handling submitSm resp: "+resp);
 	}
-	
+
 }
 
 class SubmitSmRespInvalidDestHandler implements ResponseHandler<PduAsyncResponse>{
@@ -168,7 +172,7 @@ class SubmitSmRespInvalidDestHandler implements ResponseHandler<PduAsyncResponse
 		SubmitSmResp resp = (SubmitSmResp)pduAsyncResponse.getResponse();
 		logger.info("handling submitSm resp: "+resp);
 	}
-	
+
 }
 
 
@@ -181,6 +185,6 @@ class deliverSmHandler implements RequestHandler<PduRequest,PduResponse> {
 		logger.info("handling deliverSm: " + deliver);
 		return deliver.createResponse();
 	}
-	
+
 }
 

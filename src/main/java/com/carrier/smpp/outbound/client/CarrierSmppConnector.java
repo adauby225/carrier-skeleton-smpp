@@ -11,6 +11,7 @@ import java.util.Map;
 import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.MaxRequestPerSecond;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.response.AsyncPduResponseHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.pdu.PduRequest;
@@ -23,13 +24,12 @@ public class CarrierSmppConnector {
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
 	private final MaxRequestPerSecond maxReqPerSecond;
 	
-	
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, RequestHandler>smscReqHandlers,Map<Integer, ResponseHandler>smscresponseHandlers) {
 		this.connectorConfig = connectorConfig;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
-				,smscresponseHandlers);
+				,new AsyncPduResponseHandler(smscresponseHandlers));
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 

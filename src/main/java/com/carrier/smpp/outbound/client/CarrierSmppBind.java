@@ -13,6 +13,7 @@ import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.util.LoggingUtil;
 import com.carrier.smpp.util.Messages;
 import com.carrier.smpp.util.ThreadUtil;
+import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
@@ -37,11 +38,12 @@ public class CarrierSmppBind implements Runnable{
 	private RequestSender enquireLinkSender;
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
 	private final Map<Integer, RequestHandler> smscReqHandlers;
-	private final Map<Integer, ResponseHandler> smscResponseHandlers;
+	//private final Map<Integer, ResponseHandler> smscResponseHandlers;
+	private final ResponseHandler<PduAsyncResponse> asyncHandler;
 	private DefaultSmppSessionHandler sessionHandler=null;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
 			,RequestSender enquireLinkSender,Map<Integer, RequestHandler> smscReqHandlers
-			,Map<Integer, ResponseHandler> smscResponseHandlers,int tps) {
+			,ResponseHandler<PduAsyncResponse> asyncHandler,int tps) {
 
 		this.pduQueue = pduQueue;
 		this.config = config;
@@ -49,7 +51,8 @@ public class CarrierSmppBind implements Runnable{
 		this.enquireLinkSender = enquireLinkSender;
 		this.tps = tps;
 		this.smscReqHandlers = smscReqHandlers;
-		this.smscResponseHandlers = smscResponseHandlers;
+		//this.smscResponseHandlers = smscResponseHandlers;
+		this.asyncHandler = asyncHandler;
 		this.logger = LogManager.getLogger(config.getName());
 	}
 
@@ -101,7 +104,7 @@ public class CarrierSmppBind implements Runnable{
 
 	public void intialize() {
 		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers
-				,smscResponseHandlers);
+				,null,asyncHandler);
 	}
 	private void connect() throws SmppTimeoutException,
 	SmppChannelException, UnrecoverablePduException, InterruptedException {
