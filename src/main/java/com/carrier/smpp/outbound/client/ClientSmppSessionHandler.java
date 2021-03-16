@@ -20,23 +20,28 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private PduQueue pduQueue;
 	private PduRequestHandlerFactory smscPduReqFactory;
 	private PduResponseHandlerFactory smscPduRespHandlerFactory;
+	private ResponseHandler<PduAsyncResponse> asyncHandler; 
 	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue
 			, Map<Integer, RequestHandler> smscReqHandlers
-			, Map<Integer, ResponseHandler> smscResponseHandlers) {
+			, Map<Integer, ResponseHandler> smscResponseHandlers
+			, ResponseHandler<PduAsyncResponse> asyncHandler) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.pduQueue = pduQueue;
 		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
 		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
+		this.asyncHandler = asyncHandler;
 	}
 	
 	public ClientSmppSessionHandler(String bindType,Logger logger
 			, Map<Integer, RequestHandler> smscReqHandlers
-			, Map<Integer, ResponseHandler> smscResponseHandlers) {
+			, Map<Integer, ResponseHandler> smscResponseHandlers
+			, ResponseHandler<PduAsyncResponse> asyncHandler) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
 		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
+		this.asyncHandler = asyncHandler;
 	}
 
 	@Override
@@ -60,8 +65,10 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
 		PduResponse resp = pduAsyncResponse.getResponse();
 		logger.info("[response received] : {}",resp);
-		ResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
-		respHandler.handleResponse(pduAsyncResponse);
+		asyncHandler.handleResponse(pduAsyncResponse);
+		
+		/*ResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
+		respHandler.handleResponse(pduAsyncResponse);*/
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package com.carrier.smpp.outbound.client;
 
-import static com.carrier.smpp.util.SkeletonExecutors.getExecutor;
-import static com.carrier.smpp.util.SkeletonExecutors.getMonitorExecutor;
+import static com.carrier.smpp.util.SkeletonThreadPools.getNewCachedPool;
+import static com.carrier.smpp.util.SkeletonThreadPools.getMonitorExecutor;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -12,7 +12,7 @@ public class SharedClientBootstrap {
 	private static final int CORE_POOL_SIZE=1;
 	private static SharedClientBootstrap instance;
 	private static ScheduledThreadPoolExecutor monitorExecutor = getMonitorExecutor();
-	private static ThreadPoolExecutor executor = getExecutor();
+	private static ThreadPoolExecutor executor = getNewCachedPool();
 	private DefaultSmppClient clientBootstrap =new DefaultSmppClient(executor, CORE_POOL_SIZE, monitorExecutor);
 	
 	private SharedClientBootstrap() {

@@ -1,7 +1,7 @@
 package com.carrier.smpp.server;
 
-import static com.carrier.smpp.util.SkeletonExecutors.getExecutor;
-import static com.carrier.smpp.util.SkeletonExecutors.getMonitorExecutor;
+import static com.carrier.smpp.util.SkeletonThreadPools.getNewCachedPool;
+import static com.carrier.smpp.util.SkeletonThreadPools.getMonitorExecutor;
 import static com.cloudhopper.smpp.SmppBindType.TRANSCEIVER;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_INVPASWD;
 import static com.cloudhopper.smpp.SmppConstants.STATUS_INVSYSID;
@@ -47,7 +47,7 @@ public class CarrierServerSmppTest {
 	private static final String SYSTEMID = "client1";
 	private static final String PASSWD = "passwd01";
 	private static final String MESSAGE_ID = "fcc45-523kl-j8ep";
-	private PduhandlersTester pduHandlers = new PduhandlersTester();
+	private PduHandlersTester pduHandlers = new PduHandlersTester();
 	private class EsmeAccountRepTest implements SmppAccountRepository<SmppSessionConfiguration>{
 		final SmppAccount account;
 		private EsmeAccountRepTest(SmppAccount account) {
@@ -74,7 +74,7 @@ public class CarrierServerSmppTest {
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
 
-		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
+		CarrierSmppServer smppServer = new CarrierSmppServer(getNewCachedPool(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
 		smppServer.start();
 		try {
@@ -105,7 +105,7 @@ public class CarrierServerSmppTest {
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount("WRONG_SYS_ID", PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
 
-		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
+		CarrierSmppServer smppServer = new CarrierSmppServer(getNewCachedPool(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
 		smppServer.start();
 		try {
@@ -130,7 +130,7 @@ public class CarrierServerSmppTest {
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, "bad_passwd")))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
 
-		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
+		CarrierSmppServer smppServer = new CarrierSmppServer(getNewCachedPool(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
 		DefaultSmppClient client0 = new DefaultSmppClient();
 		smppServer.start();
@@ -155,7 +155,7 @@ public class CarrierServerSmppTest {
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
 
-		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
+		CarrierSmppServer smppServer = new CarrierSmppServer(getNewCachedPool(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
 		DefaultSmppClient client0 = new DefaultSmppClient();
 		try {
@@ -186,7 +186,7 @@ public class CarrierServerSmppTest {
 				new DefaultEsmeBindRequestHandler(parameterCheckers,new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)))
 				, new EsmeAccountRepTest(new EsmeSmppAccount(SYSTEMID, PASSWD)),pduHandlers);
 
-		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
+		CarrierSmppServer smppServer = new CarrierSmppServer(getNewCachedPool(),getMonitorExecutor()
 				, new SmppSrvConfigLoader(), carrierSmppServerHandler);
 		DefaultSmppClient client0 = new DefaultSmppClient();
 		try {

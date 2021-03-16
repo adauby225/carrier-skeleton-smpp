@@ -1,7 +1,7 @@
 package com.carrier.smpp.demo.server;
 
-import static com.carrier.smpp.util.SkeletonExecutors.getExecutor;
-import static com.carrier.smpp.util.SkeletonExecutors.getMonitorExecutor;
+import static com.carrier.smpp.util.SkeletonThreadPools.getNewCachedPool;
+import static com.carrier.smpp.util.SkeletonThreadPools.getMonitorExecutor;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class CarrierServerSmppDefaultConfig {
 		
 		CarrierSmppServerHandler carrierSmppServerHandler = new CarrierSmppServerHandler(defaultEsmeBindRequestHandler
 				,new EsmeAccountRepositoryExple(),new PduHandlersDemo());
-		CarrierSmppServer smppServer = new CarrierSmppServer(getExecutor(),getMonitorExecutor()
+		CarrierSmppServer smppServer = new CarrierSmppServer(getNewCachedPool(),getMonitorExecutor()
 				, carrierSmppServerHandler);
 		
 		

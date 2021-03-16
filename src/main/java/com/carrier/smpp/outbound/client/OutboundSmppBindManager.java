@@ -13,6 +13,7 @@ import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.util.Messages;
+import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
@@ -22,22 +23,23 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
 	private final Map<Integer, RequestHandler> smscReqHandlers;
-	private final Map<Integer, ResponseHandler> smscResponseHandlers;
+	//private final Map<Integer, ResponseHandler> smscResponseHandlers;
+	private final ResponseHandler<PduAsyncResponse>asyncRespHandler;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
 			, RequestSender requestSender, Map<Integer, RequestHandler> smscReqHandlers
-			, Map<Integer, ResponseHandler> smscResponseHandlers) {
+			, ResponseHandler<PduAsyncResponse>asyncRespHandler) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
 		this.requestSender = requestSender;
 		this.smscReqHandlers = smscReqHandlers;
-		this.smscResponseHandlers = smscResponseHandlers;
+		this.asyncRespHandler = asyncRespHandler;
 	}
 
 	@Override
 	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, requestSender
-				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,smscResponseHandlers, tps);
+				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,asyncRespHandler, tps);
 		bind.setId(bindIds.getAndIncrement());
 		bind.intialize();
 		serviceExecutor.execute(bind);
@@ -61,10 +63,10 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	}
 
 	public synchronized void unbind() {
-		
-			for(CarrierSmppBind bind: binds.values()) 
-				bind.setUnbound(true);
-			
+
+		for(CarrierSmppBind bind: binds.values()) 
+			bind.setUnbound(true);
+
 	}
 
 	public List<CarrierSmppBind> getListOfBinds() {
