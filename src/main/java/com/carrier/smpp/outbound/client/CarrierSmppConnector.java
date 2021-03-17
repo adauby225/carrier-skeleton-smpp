@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.carrier.smpp.executor.ServiceExecutor;
-import com.carrier.smpp.handler.pdu.request.MaxRequestPerSecond;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.AsyncPduResponseHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;

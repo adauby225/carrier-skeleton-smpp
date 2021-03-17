@@ -33,14 +33,15 @@ public class BindTypes {
 		this.receivers = receivers;
 	}
 
-	public int total() {
-		return transceivers + receivers + transmitters;
-	}
 
 	public void update(BindTypes bindTypes) {
 		transceivers = transceivers + bindTypes.getTransceivers();
 		transmitters = transmitters + bindTypes.getTransmitters();
 		receivers = receivers + bindTypes.getReceivers();
+	}
+
+	public int totalTrxAndTx() {
+		return transceivers + transmitters;
 	}
 
 	
