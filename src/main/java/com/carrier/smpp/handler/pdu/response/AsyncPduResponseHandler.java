@@ -1,7 +1,5 @@
 package com.carrier.smpp.handler.pdu.response;
 
-import static com.carrier.smpp.util.SkeletonThreadPools.getNewCachedPool;
-
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -13,10 +11,11 @@ import com.cloudhopper.smpp.pdu.PduResponse;
 
 public class AsyncPduResponseHandler implements ResponseHandler<PduAsyncResponse> {
 	private final Logger logger = LogManager.getLogger(AsyncPduResponseHandler.class.getName());
-	private final ThreadPoolExecutor executor = getNewCachedPool();
+	private final ThreadPoolExecutor executor;
 	private PduResponseHandlerFactory smscPduRespHandlerFactory;
-	public AsyncPduResponseHandler(Map<Integer, ResponseHandler> responseHandlers) {
+	public AsyncPduResponseHandler(Map<Integer, ResponseHandler> responseHandlers,ThreadPoolExecutor executor) {
 		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(responseHandlers);
+		this.executor = executor;
 	}
 
 	@Override

@@ -4,44 +4,47 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.request.PduRequestHandlerFactory;
+import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
-import com.carrier.smpp.handler.pdu.response.PduResponseHandlerFactory;
 import com.cloudhopper.smpp.PduAsyncResponse;
+import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
 import com.cloudhopper.smpp.pdu.EnquireLink;
+import com.cloudhopper.smpp.pdu.Pdu;
 import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.pdu.PduResponse;
+import com.cloudhopper.smpp.type.RecoverablePduException;
+import com.cloudhopper.smpp.type.UnrecoverablePduException;
+import com.cloudhopper.smpp.util.SmppSessionUtil;
 
 public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private final String bindType; 
 	private final Logger logger ;
 	private PduQueue pduQueue;
 	private PduRequestHandlerFactory smscPduReqFactory;
-	private PduResponseHandlerFactory smscPduRespHandlerFactory;
-	private ResponseHandler<PduAsyncResponse> asyncHandler; 
+	private ResponseHandler<PduAsyncResponse> asyncRespHandler; 
+	private final SmppSession session;
 	public ClientSmppSessionHandler(String bindType,Logger logger, PduQueue pduQueue
 			, Map<Integer, RequestHandler> smscReqHandlers
-			, Map<Integer, ResponseHandler> smscResponseHandlers
-			, ResponseHandler<PduAsyncResponse> asyncHandler) {
+			, ResponseHandler<PduAsyncResponse> asyncRespHandler,SmppSession session) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.pduQueue = pduQueue;
 		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
-		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
-		this.asyncHandler = asyncHandler;
+		this.asyncRespHandler = asyncRespHandler;
+		this.session = session;
 	}
 	
 	public ClientSmppSessionHandler(String bindType,Logger logger
 			, Map<Integer, RequestHandler> smscReqHandlers
 			, Map<Integer, ResponseHandler> smscResponseHandlers
-			, ResponseHandler<PduAsyncResponse> asyncHandler) {
+			, ResponseHandler<PduAsyncResponse> asyncHandler, SmppSession session) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
-		this.smscPduRespHandlerFactory = new PduResponseHandlerFactory(smscResponseHandlers);
-		this.asyncHandler = asyncHandler;
+		this.asyncRespHandler = asyncHandler;
+		this.session = session;
 	}
 
 	@Override
@@ -65,16 +68,20 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	public void fireExpectedPduResponseReceived(PduAsyncResponse pduAsyncResponse) { 
 		PduResponse resp = pduAsyncResponse.getResponse();
 		logger.info("[response received] : {}",resp);
-		asyncHandler.handleResponse(pduAsyncResponse);
-		
-		/*ResponseHandler respHandler = smscPduRespHandlerFactory.getHandler(resp.getCommandId());
-		respHandler.handleResponse(pduAsyncResponse);*/
+		asyncRespHandler.handleResponse(pduAsyncResponse);
 	}
 
 	@Override
 	public void fireChannelUnexpectedlyClosed() {
 		logger.error(bindType +": unexpected close occurred...");
 	}
+	
+	@Override
+	public void fireUnrecoverablePduException(UnrecoverablePduException e) {
+		logger.error(e);
+		SmppSessionUtil.close(session);
+	}
+	
 
 
 }
