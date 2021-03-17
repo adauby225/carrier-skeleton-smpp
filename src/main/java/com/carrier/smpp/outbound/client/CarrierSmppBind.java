@@ -38,7 +38,6 @@ public class CarrierSmppBind implements Runnable{
 	private RequestSender enquireLinkSender;
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
 	private final Map<Integer, RequestHandler> smscReqHandlers;
-	//private final Map<Integer, ResponseHandler> smscResponseHandlers;
 	private final ResponseHandler<PduAsyncResponse> asyncHandler;
 	private DefaultSmppSessionHandler sessionHandler=null;
 	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
@@ -51,7 +50,6 @@ public class CarrierSmppBind implements Runnable{
 		this.enquireLinkSender = enquireLinkSender;
 		this.tps = tps;
 		this.smscReqHandlers = smscReqHandlers;
-		//this.smscResponseHandlers = smscResponseHandlers;
 		this.asyncHandler = asyncHandler;
 		this.logger = LogManager.getLogger(config.getName());
 	}
@@ -104,7 +102,7 @@ public class CarrierSmppBind implements Runnable{
 
 	public void intialize() {
 		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers
-				,null,asyncHandler);
+				,asyncHandler,session);
 	}
 	private void connect() throws SmppTimeoutException,
 	SmppChannelException, UnrecoverablePduException, InterruptedException {
