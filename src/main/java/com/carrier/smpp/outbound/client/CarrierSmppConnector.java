@@ -1,5 +1,6 @@
 package com.carrier.smpp.outbound.client;
 
+import static com.carrier.smpp.util.SkeletonThreadPools.getNewCachedPool;
 import static com.cloudhopper.smpp.SmppBindType.RECEIVER;
 import static com.cloudhopper.smpp.SmppBindType.TRANSCEIVER;
 import static com.cloudhopper.smpp.SmppBindType.TRANSMITTER;
@@ -7,6 +8,8 @@ import static com.cloudhopper.smpp.SmppBindType.TRANSMITTER;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
@@ -22,13 +25,13 @@ public class CarrierSmppConnector {
 	private PduQueue pduQueue = new PduQueue();
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
 	private final MaxRequestPerSecond maxReqPerSecond;
-	
+	private ThreadPoolExecutor executor = getNewCachedPool();
 	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, RequestHandler>smscReqHandlers,Map<Integer, ResponseHandler>smscresponseHandlers) {
 		this.connectorConfig = connectorConfig;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
-				,new AsyncPduResponseHandler(smscresponseHandlers));
+				,new AsyncPduResponseHandler(smscresponseHandlers,executor));
 		this.maxReqPerSecond = maxReqPerSecond;
 	}
 
@@ -53,8 +56,10 @@ public class CarrierSmppConnector {
 		createNewBind(TRANSMITTER, bindTypes.getTransmitters(), newTpsByBind);
 	}
 	
-	public void disconnect() {
+	public void disconnect() throws InterruptedException {
 		bindManager.unbind();
+		executor.shutdown();
+		executor.awaitTermination(10, TimeUnit.SECONDS);
 	}
 	
 	public List<CarrierSmppBind> getBinds() {
