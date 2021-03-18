@@ -23,14 +23,14 @@ public class DefaultMaxTpsCalculatorTest {
 	public void testTpsLesserThanTotalOfBinds() {
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
 		int tps =5;
-		assertEquals(1,maxTps.calculateTpsByBind(new BindTypes(0,3,3),tps));
+		assertEquals(1,maxTps.calculateTpsByBind(new BindTypes(0,10,3),tps));
 	}
 	
 	@Test
 	public void testTpsGreaterThanTotalOfBinds() {
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
 		int tps =10;
-		assertEquals(5,maxTps.calculateTpsByBind(new BindTypes(0,1,1),tps));
+		assertEquals(10,maxTps.calculateTpsByBind(new BindTypes(0,1,1),tps));
 	}
 
 }
