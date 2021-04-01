@@ -36,9 +36,9 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	}
 
 	@Override
-	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) {
+	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) throws CloneNotSupportedException {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
-		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, requestSender
+		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, (RequestSender)requestSender.clone()
 				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,asyncRespHandler, tps);
 		bind.setId(bindIds.getAndIncrement());
 		bind.intialize();

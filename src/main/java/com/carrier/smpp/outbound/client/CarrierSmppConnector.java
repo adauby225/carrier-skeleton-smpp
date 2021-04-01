@@ -66,19 +66,19 @@ public class CarrierSmppConnector {
 		});
 	}
 
-	public void connect() {
+	public void connect() throws CloneNotSupportedException {
 		BindTypes bindTypes = connectorConfig.getBindTypes();
 		int tpsByBind =maxReqPerSecond.calculateTpsByBind(bindTypes, connectorConfig.getThroughput());
 		createNewBind(TRANSCEIVER,bindTypes.getTransceivers(), tpsByBind);
 		createNewBind(RECEIVER,bindTypes.getReceivers(), tpsByBind);
 		createNewBind(TRANSMITTER, bindTypes.getTransmitters(), tpsByBind);
 	}
-	private void createNewBind(SmppBindType type,int numbers,int tpsByBind) {
+	private void createNewBind(SmppBindType type,int numbers,int tpsByBind) throws CloneNotSupportedException {
 		for(int i=0;i<numbers;i++)
 			bindManager.establishBind(connectorConfig, pduQueue,type,tpsByBind);
 	}
 
-	public void createNewBinds(BindTypes bindTypes) {
+	public void createNewBinds(BindTypes bindTypes) throws CloneNotSupportedException {
 		connectorConfig.updateBindTypes(bindTypes);
 		int newTpsByBind = maxReqPerSecond.calculateTpsByBind(connectorConfig.getBindTypes(), connectorConfig.getThroughput());
 		bindManager.updateBindTps(newTpsByBind);

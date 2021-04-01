@@ -65,5 +65,10 @@ public class DefaultEnquireLinkSender implements RequestSender {
 			logger.warn(e.getMessage());
 		}
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 }

@@ -41,7 +41,7 @@ import com.cloudhopper.smpp.util.SmppSessionUtil;
 
 public class SmppClient {
 	private static final Logger logger = LogManager.getLogger(SmppClient.class);
-	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException {
+	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException, CloneNotSupportedException {
 
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
 		//map responseHandlers
@@ -69,7 +69,6 @@ public class SmppClient {
 				,pduRequestSender, maxTps,reqHandlers,respHandlers);
 		String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
 		byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
-		//for(int i=0;i<=1000000;i++) {
 			SubmitSm sms = new SubmitSm();
 			Address sourceAddress = new Address();
 			Address destAddress = new Address();
@@ -80,7 +79,6 @@ public class SmppClient {
 			sms.setShortMessage(textBytes);
 			sms.setRegisteredDelivery((byte)0);
 			connector.addRequestFirst(sms);
-		//}
 		connector.connect();
 		List<CarrierSmppBind>binds = connector.getBinds();
 		for(CarrierSmppBind bind: binds)
@@ -150,7 +148,10 @@ class PduRequestSender implements RequestSender{
 
 	}
 
-
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 
 

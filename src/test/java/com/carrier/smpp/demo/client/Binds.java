@@ -26,7 +26,7 @@ import com.cloudhopper.smpp.type.SmppInvalidArgumentException;
 
 public class Binds {
 	private static final Logger logger = LogManager.getLogger(Binds.class);
-	public static void main(String[] args) throws SmppInvalidArgumentException, IOException, InterruptedException {
+	public static void main(String[] args) throws SmppInvalidArgumentException, IOException, InterruptedException, CloneNotSupportedException {
 		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "127.0.0.1", 34568);
 		// map responseHandlers
 		Map<Integer, ResponseHandler>submitsmRespStatusHandler = new HashMap<>();
