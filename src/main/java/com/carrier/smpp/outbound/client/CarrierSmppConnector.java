@@ -36,6 +36,7 @@ public class CarrierSmppConnector {
 				,new AsyncPduResponseHandler(smscresponseHandlers,respThreadPool));
 		this.maxReqPerSecond = maxReqPerSecond;
 		this.respThreadPool.setCorePoolSize(500);
+		this.respThreadPool.setMaximumPoolSize(1000);
 		this.respThreadPool.setThreadFactory(new ThreadFactory() {
 
 			@Override
@@ -56,6 +57,7 @@ public class CarrierSmppConnector {
 				,new AsyncPduResponseHandler(smscresponseHandlers,respThreadPool));
 		this.maxReqPerSecond = maxReqPerSecond;
 		this.respThreadPool.setCorePoolSize(maxPoolSize);
+		this.respThreadPool.setMaximumPoolSize(maxPoolSize);
 		this.respThreadPool.setThreadFactory(new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
