@@ -14,8 +14,8 @@ import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
-import com.carrier.smpp.outbound.client.CarrierSmppConnector;
-import com.carrier.smpp.outbound.client.ConnectorConfiguration;
+import com.carrier.smpp.outbound.client.SmppOutbound;
+import com.carrier.smpp.outbound.client.OutBoundConfiguration;
 import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
 import com.cloudhopper.commons.charset.CharsetUtil;
@@ -27,7 +27,7 @@ import com.cloudhopper.smpp.type.SmppInvalidArgumentException;
 public class Binds {
 	private static final Logger logger = LogManager.getLogger(Binds.class);
 	public static void main(String[] args) throws SmppInvalidArgumentException, IOException, InterruptedException, CloneNotSupportedException {
-		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "127.0.0.1", 34568);
+		OutBoundConfiguration settings = new OutBoundConfiguration("mason", "mason", "127.0.0.1", 34568);
 		Map<Integer, ResponseHandler>submitsmRespStatusHandler = new HashMap<>();
 		Map<Integer, ResponseHandler>respHandlers = new HashMap<>();
 		
@@ -47,7 +47,7 @@ public class Binds {
 		settings.setThroughput(20);
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
-        CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
+        SmppOutbound connector = new SmppOutbound(settings,BindExecutor::runBind
         		,pduRequestSender,maxTps,reqHandlers,respHandlers);
         connector.connect();
         String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";

@@ -4,7 +4,7 @@ import static com.cloudhopper.smpp.SmppConstants.DEFAULT_WINDOW_SIZE;
 
 import com.cloudhopper.smpp.SmppConstants;
 
-public class ConnectorConfiguration{
+public class OutBoundConfiguration{
 	private static final int DEFAULT_TPS = 1;
 	
 	private String name;
@@ -25,14 +25,14 @@ public class ConnectorConfiguration{
 	private String systemType;
 	private BindTypes bindTypes=new BindTypes();
 	
-	public ConnectorConfiguration() {}
-	public ConnectorConfiguration(String name,String login, String password, String remoteHost
+	public OutBoundConfiguration() {}
+	public OutBoundConfiguration(String name,String login, String password, String remoteHost
 			, int remotePort) {
 		this(login, password,  remoteHost, remotePort);
 		this.name = name;
 	}
 	
-	public ConnectorConfiguration(String login, String password, String remoteHost, int remotePort) {
+	public OutBoundConfiguration(String login, String password, String remoteHost, int remotePort) {
 		super();
 		this.login = login;
 		this.password = password;
@@ -40,7 +40,7 @@ public class ConnectorConfiguration{
 		this.remotePort = remotePort;
 	}
 	
-	public ConnectorConfiguration(String name, String login, String password, String host,
+	public OutBoundConfiguration(String name, String login, String password, String host,
 			String remoteHost, int remotePort) {
 		this(login, password,  remoteHost, remotePort);
 		this.name = name;

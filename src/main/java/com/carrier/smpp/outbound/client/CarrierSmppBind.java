@@ -25,7 +25,6 @@ import com.cloudhopper.smpp.type.UnrecoverablePduException;
 
 public class CarrierSmppBind implements Runnable{
 	private final Logger logger;
-	private long timeToSleep = 100;
 	private Long id;
 	private PduQueue pduQueue;
 	private SmppSessionConfiguration config;
@@ -85,8 +84,8 @@ public class CarrierSmppBind implements Runnable{
 				destroySession();
 
 			}finally {
-				if(!unbound) 
-					ThreadUtil.sleep(timeToSleep);
+				if(!unbound && pduQueue.isEmpty()) 
+					ThreadUtil.sleep(enquireLinkInterval);
 			}
 			if(unbound)
 				break;
@@ -185,7 +184,6 @@ public class CarrierSmppBind implements Runnable{
 				logCounters();
 				session.destroy();
 				session = null;
-				timeToSleep = 10000;
 			}
 		}catch(Exception e) {
 			logger.warn("Destroy session error", e);

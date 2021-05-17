@@ -19,15 +19,15 @@ import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.pdu.PduRequest;
 
-public class CarrierSmppConnector {
+public class SmppOutbound {
 
-	private ConnectorConfiguration connectorConfig;
+	private OutBoundConfiguration connectorConfig;
 	private OutboundSmppBindManager bindManager;
 	private PduQueue pduQueue = new PduQueue();
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
 	private final MaxRequestPerSecond maxReqPerSecond;
 	private ThreadPoolExecutor respThreadPool = getNewCachedPool();
-	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
+	public SmppOutbound(OutBoundConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, RequestHandler>smscReqHandlers
 			,Map<Integer, ResponseHandler>smscresponseHandlers) {
@@ -48,7 +48,7 @@ public class CarrierSmppConnector {
 		});
 	}
 
-	public CarrierSmppConnector(ConnectorConfiguration connectorConfig, ServiceExecutor serviceExecutor
+	public SmppOutbound(OutBoundConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, RequestHandler>smscReqHandlers
 			,Map<Integer, ResponseHandler>smscresponseHandlers, int maxPoolSize) {

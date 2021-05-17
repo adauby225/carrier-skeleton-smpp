@@ -14,8 +14,8 @@ import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
-import com.carrier.smpp.outbound.client.CarrierSmppConnector;
-import com.carrier.smpp.outbound.client.ConnectorConfiguration;
+import com.carrier.smpp.outbound.client.SmppOutbound;
+import com.carrier.smpp.outbound.client.OutBoundConfiguration;
 import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.PduQueue;
 import com.carrier.smpp.outbound.client.RequestSender;
@@ -43,7 +43,7 @@ public class SmppClient {
 	private static final Logger logger = LogManager.getLogger(SmppClient.class);
 	public static void main(String[] args) throws InterruptedException, SmppInvalidArgumentException, IOException, CloneNotSupportedException {
 
-		ConnectorConfiguration settings = new ConnectorConfiguration("mason", "mason", "localhost", 34568);
+		OutBoundConfiguration settings = new OutBoundConfiguration("mason", "mason", "localhost", 34568);
 		//map responseHandlers
 		Map<Integer, ResponseHandler>submitsmRespStatusHandler = new HashMap<>();
 		Map<Integer, ResponseHandler>respHandlers = new HashMap<>();
@@ -65,7 +65,7 @@ public class SmppClient {
 		settings.setBindTypes(bindTypes);
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
-		CarrierSmppConnector connector = new CarrierSmppConnector(settings,BindExecutor::runBind
+		SmppOutbound connector = new SmppOutbound(settings,BindExecutor::runBind
 				,pduRequestSender, maxTps,reqHandlers,respHandlers);
 		String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
 		byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);

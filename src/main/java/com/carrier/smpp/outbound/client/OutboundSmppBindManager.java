@@ -17,7 +17,7 @@ import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 
-public class OutboundSmppBindManager implements Connection<ConnectorConfiguration> {
+public class OutboundSmppBindManager implements Connection<OutBoundConfiguration> {
 	private static AtomicLong bindIds = new  AtomicLong(1);
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
@@ -36,7 +36,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	}
 
 	@Override
-	public void establishBind(ConnectorConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) throws CloneNotSupportedException {
+	public void establishBind(OutBoundConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) throws CloneNotSupportedException {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
 		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, (RequestSender)requestSender.clone()
 				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,asyncRespHandler, tps);
@@ -46,7 +46,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 		binds.put(bind.getId(), bind);
 	}
 
-	public SmppSessionConfiguration getSessionConfig(ConnectorConfiguration connectorConfig,SmppBindType type) {
+	public SmppSessionConfiguration getSessionConfig(OutBoundConfiguration connectorConfig,SmppBindType type) {
 		SmppSessionConfiguration config = new SmppSessionConfiguration(type, connectorConfig.getLogin(), connectorConfig.getPassword());
 		config.setName(connectorConfig.getName());
 		config.setHost(connectorConfig.getRemoteHost());
@@ -80,7 +80,7 @@ public class OutboundSmppBindManager implements Connection<ConnectorConfiguratio
 	}
 
 	@Override
-	public void establishBind(ConnectorConfiguration t, PduQueue pduQueue, int tps) {
+	public void establishBind(OutBoundConfiguration t, PduQueue pduQueue, int tps) {
 		throw new UnsupportedOperationException(Messages.UNAUTHORIZED_OPERATION);
 	}
 
