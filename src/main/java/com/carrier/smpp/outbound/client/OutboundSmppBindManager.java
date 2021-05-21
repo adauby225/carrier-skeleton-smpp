@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.pdu.request.dispatching.RequestManager;
+import com.carrier.smpp.pdu.request.dispatching.RequestQueue;
 import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
@@ -36,9 +38,9 @@ public class OutboundSmppBindManager implements Connection<OutBoundConfiguration
 	}
 
 	@Override
-	public void establishBind(OutBoundConfiguration settings,PduQueue pduQueue, SmppBindType type,int tps) throws CloneNotSupportedException {
+	public void establishBind(OutBoundConfiguration settings,RequestManager reqDispatcher, SmppBindType type,int tps) throws CloneNotSupportedException {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
-		CarrierSmppBind bind =new CarrierSmppBind(pduQueue, config, (RequestSender)requestSender.clone()
+		CarrierSmppBind bind =new CarrierSmppBind(reqDispatcher, config, (RequestSender)requestSender.clone()
 				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,asyncRespHandler, tps);
 		bind.setId(bindIds.getAndIncrement());
 		bind.intialize();
@@ -80,7 +82,7 @@ public class OutboundSmppBindManager implements Connection<OutBoundConfiguration
 	}
 
 	@Override
-	public void establishBind(OutBoundConfiguration t, PduQueue pduQueue, int tps) {
+	public void establishBind(OutBoundConfiguration t, RequestManager reqDispatcher, int tps) {
 		throw new UnsupportedOperationException(Messages.UNAUTHORIZED_OPERATION);
 	}
 

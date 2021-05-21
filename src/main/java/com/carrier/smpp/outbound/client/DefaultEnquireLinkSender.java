@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.carrier.smpp.pdu.request.dispatching.RequestManager;
+import com.carrier.smpp.pdu.request.dispatching.RequestQueue;
 import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
@@ -30,7 +32,7 @@ public class DefaultEnquireLinkSender implements RequestSender {
 	}
 	
 	@Override
-	public void send(SmppSession session, PduQueue pduQueue, int tps) throws InterruptedException {
+	public void send(SmppSession session, RequestManager reqDispatching, int tps) throws InterruptedException {
 		throw new UnsupportedOperationException(Messages.UNAUTHORIZED_OPERATION);
 	}
 

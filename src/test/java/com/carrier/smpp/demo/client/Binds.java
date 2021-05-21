@@ -15,6 +15,7 @@ import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
 import com.carrier.smpp.outbound.client.SmppOutbound;
+import com.carrier.smpp.pdu.request.dispatching.RequestCollections;
 import com.carrier.smpp.outbound.client.OutBoundConfiguration;
 import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
@@ -48,7 +49,7 @@ public class Binds {
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
         SmppOutbound connector = new SmppOutbound(settings,BindExecutor::runBind
-        		,pduRequestSender,maxTps,reqHandlers,respHandlers);
+        		,pduRequestSender,maxTps,reqHandlers,respHandlers,new RequestCollections());
         connector.connect();
         String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
         byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);

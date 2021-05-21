@@ -16,6 +16,7 @@ import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.AsyncPduResponseHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.pdu.request.dispatching.RequestManager;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.pdu.PduRequest;
 
@@ -23,20 +24,21 @@ public class SmppOutbound {
 
 	private OutBoundConfiguration connectorConfig;
 	private OutboundSmppBindManager bindManager;
-	private PduQueue pduQueue = new PduQueue();
+	private RequestManager reqDispatcher ;
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
 	private final MaxRequestPerSecond maxReqPerSecond;
 	private ThreadPoolExecutor respThreadPool = getNewCachedPool();
 	public SmppOutbound(OutBoundConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
 			,Map<Integer, RequestHandler>smscReqHandlers
-			,Map<Integer, ResponseHandler>smscresponseHandlers) {
+			,Map<Integer, ResponseHandler>smscresponseHandlers,RequestManager reqDispatcher) {
 		this.connectorConfig = connectorConfig;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
 				,new AsyncPduResponseHandler(smscresponseHandlers,respThreadPool));
 		this.maxReqPerSecond = maxReqPerSecond;
 		this.respThreadPool.setCorePoolSize(500);
 		this.respThreadPool.setMaximumPoolSize(1000);
+		this.reqDispatcher = reqDispatcher;
 		this.respThreadPool.setThreadFactory(new ThreadFactory() {
 
 			@Override
@@ -77,7 +79,7 @@ public class SmppOutbound {
 	}
 	private void createNewBind(SmppBindType type,int numbers,int tpsByBind) throws CloneNotSupportedException {
 		for(int i=0;i<numbers;i++)
-			bindManager.establishBind(connectorConfig, pduQueue,type,tpsByBind);
+			bindManager.establishBind(connectorConfig, reqDispatcher,type,tpsByBind);
 	}
 
 	public void createNewBinds(BindTypes bindTypes) throws CloneNotSupportedException {
@@ -100,20 +102,17 @@ public class SmppOutbound {
 	}
 
 	public void addRequestFirst(PduRequest pduRequest) {
-		pduQueue.addRequestFirst(pduRequest);
+		reqDispatcher.addRequest(pduRequest);
 	}
-
-	public void addRequestLast(PduRequest pduRequest) {
-		pduQueue.addRequestLast(pduRequest);
+	public long sizeOfRequest() {
+		return reqDispatcher.sizeOfRequests();
 	}
 
 	public void stopBind(int id) {
 		bindManager.stopBind(id);
 	}
 
-	public int sizeOfRequest() {
-		return pduQueue.size();
-	}
+	
 
 
 

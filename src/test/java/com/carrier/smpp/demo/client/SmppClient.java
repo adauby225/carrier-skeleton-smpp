@@ -4,22 +4,24 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.executor.BindExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
-import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.handler.pdu.response.PduResponseHandler;
+import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.outbound.client.BindTypes;
 import com.carrier.smpp.outbound.client.CarrierSmppBind;
-import com.carrier.smpp.outbound.client.SmppOutbound;
-import com.carrier.smpp.outbound.client.OutBoundConfiguration;
 import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
-import com.carrier.smpp.outbound.client.PduQueue;
+import com.carrier.smpp.outbound.client.OutBoundConfiguration;
 import com.carrier.smpp.outbound.client.RequestSender;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
+import com.carrier.smpp.outbound.client.SmppOutbound;
+import com.carrier.smpp.pdu.request.dispatching.RequestCollections;
+import com.carrier.smpp.pdu.request.dispatching.RequestManager;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
@@ -66,7 +68,7 @@ public class SmppClient {
 		PduRequestSender pduRequestSender = new PduRequestSender();
 		DefaultMaxTpsCalculator maxTps = new DefaultMaxTpsCalculator();
 		SmppOutbound connector = new SmppOutbound(settings,BindExecutor::runBind
-				,pduRequestSender, maxTps,reqHandlers,respHandlers);
+				,pduRequestSender, maxTps,reqHandlers,respHandlers, new RequestCollections());
 		String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
 		byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
 			SubmitSm sms = new SubmitSm();
@@ -100,11 +102,11 @@ public class SmppClient {
 class PduRequestSender implements RequestSender{
 	private final Logger logger = LogManager.getLogger(PduRequestSender.class);
 	@Override
-	public void send(SmppSession session, PduQueue pduQueue, int tps) throws InterruptedException {
-		if(session.isBound() && !pduQueue.isEmpty()) {
+	public void send(SmppSession session, RequestManager reqDispatcher, int tps) throws InterruptedException {
+		if(session.isBound() && reqDispatcher.sizeOfRequests()>0) {
 			try {
 				SmppSessionConfiguration config=  session.getConfiguration();
-				sendMessage(session,tps,canSubmit(config.getType()),pduQueue);
+				sendMessage(session,tps,canSubmit(config.getType()),reqDispatcher);
 			}catch(UnrecoverablePduException  | SmppChannelException e) {
 				SmppSessionUtil.close(session);
 			}
@@ -112,18 +114,17 @@ class PduRequestSender implements RequestSender{
 
 	}
 
-	public boolean sendMessage(SmppSession session, int maxToSend
-			,boolean canSend,PduQueue pduQueue) throws UnrecoverablePduException, SmppChannelException,InterruptedException {
-		PduRequest asynchronSubmit=null;
+	public boolean sendMessage(SmppSession session, long maxToSend
+			,boolean canSend,RequestManager reqDispatcher) throws UnrecoverablePduException, SmppChannelException,InterruptedException {
+		Optional<PduRequest> asynchronSubmit=Optional.empty();
 		boolean submited=false;
 		try {
-			if(canSend && !pduQueue.isEmpty()) {
-				if(maxToSend > pduQueue.size())
-					maxToSend = pduQueue.size();
+			if(canSend && reqDispatcher.sizeOfRequests()>0) {
+				if(maxToSend > reqDispatcher.sizeOfRequests())
+					maxToSend = reqDispatcher.sizeOfRequests();
 				for(int i=0 ;i<maxToSend;i++) {
-					asynchronSubmit = pduQueue.takeFirstRequest();
-					logger.info("is submit null: {}",asynchronSubmit == null);
-					session.sendRequestPdu(asynchronSubmit,session.getConfiguration().getRequestExpiryTimeout(), false);				
+					asynchronSubmit = reqDispatcher.nextRequest();
+					session.sendRequestPdu(asynchronSubmit.get(),session.getConfiguration().getRequestExpiryTimeout(), false);				
 					logger.info(asynchronSubmit);	
 				}
 				submited=true;
@@ -131,8 +132,8 @@ class PduRequestSender implements RequestSender{
 		}catch( RecoverablePduException | SmppTimeoutException e) {
 			logger.error(e);
 		}finally {
-			if(!submited && asynchronSubmit!=null)
-				pduQueue.addRequestFirst(asynchronSubmit);
+			if(!submited && asynchronSubmit.isPresent())
+				reqDispatcher.addRequest(asynchronSubmit.get());
 		}
 
 		return submited;

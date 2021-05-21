@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
+import com.carrier.smpp.pdu.request.dispatching.RequestManager;
+import com.carrier.smpp.pdu.request.dispatching.RequestQueue;
 import com.carrier.smpp.util.LoggingUtil;
 import com.carrier.smpp.util.Messages;
 import com.carrier.smpp.util.ThreadUtil;
@@ -26,7 +28,7 @@ import com.cloudhopper.smpp.type.UnrecoverablePduException;
 public class CarrierSmppBind implements Runnable{
 	private final Logger logger;
 	private Long id;
-	private PduQueue pduQueue;
+	private RequestManager reqDispatcher;
 	private SmppSessionConfiguration config;
 	private boolean unbound = false;
 	private SmppSession session = null;
@@ -39,11 +41,11 @@ public class CarrierSmppBind implements Runnable{
 	private final Map<Integer, RequestHandler> smscReqHandlers;
 	private final ResponseHandler<PduAsyncResponse> asyncHandler;
 	private DefaultSmppSessionHandler sessionHandler=null;
-	public CarrierSmppBind(PduQueue pduQueue, SmppSessionConfiguration config, RequestSender requestSender
+	public CarrierSmppBind(RequestManager reqDispatcher, SmppSessionConfiguration config, RequestSender requestSender
 			,RequestSender enquireLinkSender,Map<Integer, RequestHandler> smscReqHandlers
 			,ResponseHandler<PduAsyncResponse> asyncHandler,int tps) {
 
-		this.pduQueue = pduQueue;
+		this.reqDispatcher = reqDispatcher;
 		this.config = config;
 		this.requestSender =requestSender;
 		this.enquireLinkSender = enquireLinkSender;
@@ -64,7 +66,7 @@ public class CarrierSmppBind implements Runnable{
 		while(!unbound) {
 			try {
 				if(session != null && session.isBound()) {
-					requestSender.send(session, pduQueue, tps);
+					requestSender.send(session, reqDispatcher, tps);
 					enquireLinkSender.send(session,enquireLinkInterval);
 				}else reconnect();
 
@@ -73,10 +75,7 @@ public class CarrierSmppBind implements Runnable{
 				logger.warn("Unable to connect: " + e.getMessage() + " " + LoggingUtil.toString(config, false));
 				logger.debug("", e);
 				destroySession();
-				/*
-				 * Wait 10 seconds before trying again...
-				 */
-
+				
 			}catch(InterruptedException e) {
 				logger.error("[connection failure]" + e);
 				Thread currentThread = Thread.currentThread();
@@ -84,7 +83,7 @@ public class CarrierSmppBind implements Runnable{
 				destroySession();
 
 			}finally {
-				if(!unbound && pduQueue.isEmpty()) 
+				if(!unbound && reqDispatcher.sizeOfRequests()>0) 
 					ThreadUtil.sleep(enquireLinkInterval);
 			}
 			if(unbound)
@@ -100,7 +99,7 @@ public class CarrierSmppBind implements Runnable{
 	}
 
 	public void intialize() {
-		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,pduQueue,smscReqHandlers
+		sessionHandler= new ClientSmppSessionHandler(config.getName(),logger,reqDispatcher,smscReqHandlers
 				,asyncHandler,session);
 	}
 	private void connect() throws SmppTimeoutException,
