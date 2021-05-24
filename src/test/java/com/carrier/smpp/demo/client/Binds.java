@@ -21,6 +21,8 @@ import com.carrier.smpp.outbound.client.DefaultMaxTpsCalculator;
 import com.carrier.smpp.outbound.client.SharedClientBootstrap;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.SmppConstants;
+import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.type.Address;
 import com.cloudhopper.smpp.type.SmppInvalidArgumentException;
@@ -36,7 +38,7 @@ public class Binds {
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new PduResponseHandler(submitsmRespStatusHandler));
 		//map request form smsc
-		Map<Integer, RequestHandler>reqHandlers = new HashMap<>();
+		Map<Integer, RequestHandler<PduRequest, PduResponse>>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		settings.setWindowSize(1);
         settings.setName("test.carrier.0");
@@ -61,18 +63,18 @@ public class Binds {
         sms.setSourceAddress(sourceAddress);
         sms.setDestAddress(destAddress);
         sms.setShortMessage(textBytes);
-        connector.addRequestFirst(sms);
-        List<CarrierSmppBind>binds_1 = connector.getBinds();
+        connector.addRequest(sms);
+        List<CarrierSmppBind>binds = connector.getBinds();
     
-        for(CarrierSmppBind bind: binds_1) {
+        for(CarrierSmppBind bind: binds) {
         	logger.info("bind {} is bound: {} with tps {}",bind.getId(), bind.isUp(),bind.getTps());
         }
         //create new bind
         logger.info("Press any key to add new bind");
         System.in.read();
         connector.createNewBinds(new BindTypes(1, 0, 0));
-        List<CarrierSmppBind>binds_2 = connector.getBinds();
-        for(CarrierSmppBind bind: binds_2) {
+        binds = connector.getBinds();
+        for(CarrierSmppBind bind: binds) {
         	logger.info("bind {} is bound: {} with tps {}",bind.getId(), bind.isUp(), bind.getTps());
         }
         logger.info("Press any key to unbind bind 1 ");

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.pdu.request.dispatching.RequestManager;
-import com.carrier.smpp.pdu.request.dispatching.RequestQueue;
 import com.carrier.smpp.util.LoggingUtil;
 import com.carrier.smpp.util.Messages;
 import com.carrier.smpp.util.ThreadUtil;
@@ -21,6 +20,8 @@ import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
+import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppTimeoutException;
 import com.cloudhopper.smpp.type.UnrecoverablePduException;
@@ -38,11 +39,11 @@ public class CarrierSmppBind implements Runnable{
 	private int tps;
 	private RequestSender enquireLinkSender;
 	private int enquireLinkInterval = DEFAULT_ENQUIRE_LINK_INTERVAL;
-	private final Map<Integer, RequestHandler> smscReqHandlers;
+	private final Map<Integer, RequestHandler<PduRequest,PduResponse>> smscReqHandlers;
 	private final ResponseHandler<PduAsyncResponse> asyncHandler;
 	private DefaultSmppSessionHandler sessionHandler=null;
 	public CarrierSmppBind(RequestManager reqDispatcher, SmppSessionConfiguration config, RequestSender requestSender
-			,RequestSender enquireLinkSender,Map<Integer, RequestHandler> smscReqHandlers
+			,RequestSender enquireLinkSender,Map<Integer, RequestHandler<PduRequest,PduResponse>> smscReqHandlers
 			,ResponseHandler<PduAsyncResponse> asyncHandler,int tps) {
 
 		this.reqDispatcher = reqDispatcher;
@@ -62,11 +63,14 @@ public class CarrierSmppBind implements Runnable{
 
 	@Override
 	public void run() {
-
+		logger.info("inside bind {}", config.getName().concat("-"+config.getType().toString()));
 		while(!unbound) {
 			try {
+				logger.info("{} trying to send request(s)", config.getName().concat("-"+config.getType().toString()));
 				if(session != null && session.isBound()) {
+					logger.info("{} trying to send submit_sm(s)", config.getName().concat("-"+config.getType().toString()));
 					requestSender.send(session, reqDispatcher, tps);
+					logger.info("{} sending enquire_link", config.getName().concat("-"+config.getType().toString()));
 					enquireLinkSender.send(session,enquireLinkInterval);
 				}else reconnect();
 
@@ -82,14 +86,18 @@ public class CarrierSmppBind implements Runnable{
 				currentThread.interrupt();
 				destroySession();
 
+			}catch(Exception e) {
+				logger.error(e);
 			}finally {
+				logger.info("{} trying pause", config.getName().concat("-"+config.getType().toString()));
 				if(!unbound && reqDispatcher.sizeOfRequests()>0) 
 					ThreadUtil.sleep(enquireLinkInterval);
 			}
-			if(unbound)
+			if(unbound) 
 				break;
+			
 		}
-
+		logger.info("{} Stopping", config.getName());
 		logger.info(UNBINDING);
 		unbind();
 	}

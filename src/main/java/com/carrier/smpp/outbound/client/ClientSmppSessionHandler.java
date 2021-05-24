@@ -4,8 +4,9 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import com.carrier.smpp.handler.pdu.request.PduRequestHandlerFactory;
+import com.carrier.smpp.handler.pdu.request.EsmeRequestHandlerFactory;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
+import com.carrier.smpp.handler.pdu.request.SmscRequestHandlerFactory;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.pdu.request.dispatching.RequestManager;
 import com.cloudhopper.smpp.PduAsyncResponse;
@@ -21,27 +22,27 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 	private final String bindType; 
 	private final Logger logger ;
 	private RequestManager reqDispatcher;
-	private PduRequestHandlerFactory smscPduReqFactory;
+	private SmscRequestHandlerFactory smscPduReqFactory;
 	private ResponseHandler<PduAsyncResponse> asyncRespHandler; 
 	private final SmppSession session;
 	public ClientSmppSessionHandler(String bindType,Logger logger, RequestManager reqDispatcher
-			, Map<Integer, RequestHandler> smscReqHandlers
+			, Map<Integer, RequestHandler<PduRequest,PduResponse>> smscReqHandlers
 			, ResponseHandler<PduAsyncResponse> asyncRespHandler,SmppSession session) {
 		this.bindType = bindType;
 		this.logger = logger;
 		this.reqDispatcher = reqDispatcher;
-		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
+		this.smscPduReqFactory = new SmscRequestHandlerFactory(smscReqHandlers);
 		this.asyncRespHandler = asyncRespHandler;
 		this.session = session;
 	}
 	
 	public ClientSmppSessionHandler(String bindType,Logger logger
-			, Map<Integer, RequestHandler> smscReqHandlers
+			, Map<Integer, RequestHandler<PduRequest, PduResponse>> smscReqHandlers
 			, Map<Integer, ResponseHandler> smscResponseHandlers
 			, ResponseHandler<PduAsyncResponse> asyncHandler, SmppSession session) {
 		this.bindType = bindType;
 		this.logger = logger;
-		this.smscPduReqFactory = new PduRequestHandlerFactory(smscReqHandlers);
+		this.smscPduReqFactory = new SmscRequestHandlerFactory(smscReqHandlers);
 		this.asyncRespHandler = asyncHandler;
 		this.session = session;
 	}

@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.carrier.smpp.handler.pdu.request.EsmePduRequest;
-import com.carrier.smpp.handler.pdu.request.PduRequestHandlerFactory;
+import com.carrier.smpp.handler.pdu.request.EsmeRequestHandlerFactory;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.handler.pdu.response.PduResponseHandlerFactory;
@@ -19,14 +19,14 @@ public class EsmeSmppSessionHandler extends DefaultSmppSessionHandler {
 	private final Logger logger;
 	private final Long sessionId;
 	private EsmeSmppSession esmeSmppSession;
-	private final PduRequestHandlerFactory esmeRequestHandlerFactory;
+	private final EsmeRequestHandlerFactory esmeRequestHandlerFactory;
 	private final PduResponseHandlerFactory esmeResponseHandlerFactory;
 	public EsmeSmppSessionHandler(Long sessionId, EsmeSmppSession esmeSmppSession
-			,Map<Integer, RequestHandler>handlers
+			,Map<Integer, RequestHandler<EsmePduRequest,PduResponse>>handlers
 			, Map<Integer, ResponseHandler> responseHandlers) {
 		this.sessionId = sessionId;
 		this.esmeSmppSession = esmeSmppSession;
-		this.esmeRequestHandlerFactory = new PduRequestHandlerFactory(handlers);
+		this.esmeRequestHandlerFactory = new EsmeRequestHandlerFactory(handlers);
 		this.esmeResponseHandlerFactory = new PduResponseHandlerFactory(responseHandlers);
 		this.logger = LogManager.getLogger(esmeSmppSession.getAccountName());
 	}

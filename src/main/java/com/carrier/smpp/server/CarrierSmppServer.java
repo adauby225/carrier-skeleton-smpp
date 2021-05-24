@@ -2,6 +2,7 @@ package com.carrier.smpp.server;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +52,15 @@ public class CarrierSmppServer implements CarrierSmppInstance{
 
 	@Override
 	public void stop() {
-		defaultSmppServer.destroy();
+		try {
+			defaultSmppServer.destroy();
+			monitorExecutor.shutdown();
+			monitorExecutor.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			logger.error(e);
+		}catch(Exception e) {
+			logger.error(e);
+		}
 	}
 
 }

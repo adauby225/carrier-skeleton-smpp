@@ -2,11 +2,12 @@ package com.carrier.smpp.handler.pdu.request;
 
 import com.carrier.smpp.server.EsmeSmppSession;
 import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 
 public class EsmePduRequest {
-	private PduRequest request;
+	private PduRequest<PduResponse> request;
 	private EsmeSmppSession esmeSmppSession;
-	public EsmePduRequest(PduRequest request, EsmeSmppSession esmeSmppSession) {
+	public EsmePduRequest(PduRequest<PduResponse> request, EsmeSmppSession esmeSmppSession) {
 		super();
 		this.request = request;
 		this.esmeSmppSession = esmeSmppSession;

@@ -21,13 +21,17 @@ import com.cloudhopper.smpp.util.SmppSessionUtil;
 public class DefaultEnquireLinkSender implements RequestSender {
 	private LocalDateTime lastSent;
 	private boolean firstSent=true;
-	private final Logger logger;
+	private Logger logger;
+	private String loggerName;
 	
 	public DefaultEnquireLinkSender(String loggerName) {
 		super();
 		if(loggerName== null)
 			logger = LogManager.getLogger(DefaultEnquireLinkSender.class.getName());
-		else logger = LogManager.getLogger(loggerName);
+		else {
+			this.loggerName = loggerName;
+			logger = LogManager.getLogger(this.loggerName);
+		}
 		
 	}
 	
@@ -70,7 +74,13 @@ public class DefaultEnquireLinkSender implements RequestSender {
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+		DefaultEnquireLinkSender clone = (DefaultEnquireLinkSender) super.clone();
+		if(loggerName== null)
+			clone.logger = LogManager.getLogger(DefaultEnquireLinkSender.class.getName());
+		else 
+			clone.logger = LogManager.getLogger(this.loggerName);
+		
+		return clone;
 	}
 
 }

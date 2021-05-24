@@ -18,17 +18,19 @@ import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
+import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 
 public class OutboundSmppBindManager implements Connection<OutBoundConfiguration> {
 	private static AtomicLong bindIds = new  AtomicLong(1);
 	private ServiceExecutor serviceExecutor;
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
-	private final Map<Integer, RequestHandler> smscReqHandlers;
+	private final Map<Integer, RequestHandler<PduRequest, PduResponse>> smscReqHandlers;
 	//private final Map<Integer, ResponseHandler> smscResponseHandlers;
 	private final ResponseHandler<PduAsyncResponse>asyncRespHandler;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
-			, RequestSender requestSender, Map<Integer, RequestHandler> smscReqHandlers
+			, RequestSender requestSender, Map<Integer, RequestHandler<PduRequest, PduResponse>> smscReqHandlers
 			, ResponseHandler<PduAsyncResponse>asyncRespHandler) {
 		this.serviceExecutor = serviceExecutor;
 		this.binds = binds;
@@ -41,7 +43,7 @@ public class OutboundSmppBindManager implements Connection<OutBoundConfiguration
 	public void establishBind(OutBoundConfiguration settings,RequestManager reqDispatcher, SmppBindType type,int tps) throws CloneNotSupportedException {
 		SmppSessionConfiguration config = getSessionConfig(settings, type);
 		CarrierSmppBind bind =new CarrierSmppBind(reqDispatcher, config, (RequestSender)requestSender.clone()
-				,new DefaultEnquireLinkSender(config.getName()),smscReqHandlers,asyncRespHandler, tps);
+				,(DefaultEnquireLinkSender) new DefaultEnquireLinkSender(config.getName()).clone(),smscReqHandlers,asyncRespHandler, tps);
 		bind.setId(bindIds.getAndIncrement());
 		bind.intialize();
 		serviceExecutor.execute(bind);
@@ -65,7 +67,6 @@ public class OutboundSmppBindManager implements Connection<OutBoundConfiguration
 	}
 
 	public synchronized void unbind() {
-
 		for(CarrierSmppBind bind: binds.values()) 
 			bind.setUnbound(true);
 

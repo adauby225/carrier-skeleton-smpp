@@ -12,6 +12,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.carrier.smpp.executor.BindExecutor;
 import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.AsyncPduResponseHandler;
@@ -19,9 +23,10 @@ import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.pdu.request.dispatching.RequestManager;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.pdu.PduRequest;
+import com.cloudhopper.smpp.pdu.PduResponse;
 
 public class SmppOutbound {
-
+	private final Logger logger = LogManager.getLogger(SmppOutbound.class.getName());
 	private OutBoundConfiguration connectorConfig;
 	private OutboundSmppBindManager bindManager;
 	private RequestManager reqDispatcher ;
@@ -30,7 +35,7 @@ public class SmppOutbound {
 	private ThreadPoolExecutor respThreadPool = getNewCachedPool();
 	public SmppOutbound(OutBoundConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
-			,Map<Integer, RequestHandler>smscReqHandlers
+			,Map<Integer, RequestHandler<PduRequest, PduResponse>>smscReqHandlers
 			,Map<Integer, ResponseHandler>smscresponseHandlers,RequestManager reqDispatcher) {
 		this.connectorConfig = connectorConfig;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
@@ -52,7 +57,7 @@ public class SmppOutbound {
 
 	public SmppOutbound(OutBoundConfiguration connectorConfig, ServiceExecutor serviceExecutor
 			,RequestSender requestSender,MaxRequestPerSecond maxReqPerSecond
-			,Map<Integer, RequestHandler>smscReqHandlers
+			,Map<Integer, RequestHandler<PduRequest, PduResponse>>smscReqHandlers
 			,Map<Integer, ResponseHandler>smscresponseHandlers, int maxPoolSize) {
 		this.connectorConfig = connectorConfig;
 		this.bindManager = new OutboundSmppBindManager(binds,serviceExecutor,requestSender,smscReqHandlers
@@ -94,14 +99,18 @@ public class SmppOutbound {
 	public void disconnect() throws InterruptedException {
 		bindManager.unbind();
 		respThreadPool.shutdown();
-		respThreadPool.awaitTermination(10, TimeUnit.SECONDS);
+		respThreadPool.awaitTermination(5, TimeUnit.SECONDS);
+		logger.info("resThreadPool is terminated {} and shutdown {}",respThreadPool.isTerminated(), respThreadPool.isShutdown());
+		respThreadPool.shutdownNow();
+		logger.info("resThreadPool is shutdown now {}", respThreadPool.isShutdown());
+		
 	}
 
 	public List<CarrierSmppBind> getBinds() {
 		return bindManager.getListOfBinds();
 	}
 
-	public void addRequestFirst(PduRequest pduRequest) {
+	public void addRequest(PduRequest pduRequest) {
 		reqDispatcher.addRequest(pduRequest);
 	}
 	public long sizeOfRequest() {

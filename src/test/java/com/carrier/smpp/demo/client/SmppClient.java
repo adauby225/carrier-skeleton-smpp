@@ -54,7 +54,7 @@ public class SmppClient {
 		submitsmRespStatusHandler.put(SmppConstants.STATUS_OK, new SubmitSmRespStatusOkHandler());
 		respHandlers.put(SmppConstants.CMD_ID_SUBMIT_SM_RESP, new PduResponseHandler(submitsmRespStatusHandler));
 		//map request form smsc
-		Map<Integer, RequestHandler>reqHandlers = new HashMap<>();
+		Map<Integer, RequestHandler<PduRequest, PduResponse>>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
 		settings.setWindowSize(1);
 		settings.setName("test.carrier.0");
@@ -80,7 +80,7 @@ public class SmppClient {
 			sms.setDestAddress(destAddress);
 			sms.setShortMessage(textBytes);
 			sms.setRegisteredDelivery((byte)0);
-			connector.addRequestFirst(sms);
+			connector.addRequest(sms);
 		connector.connect();
 		List<CarrierSmppBind>binds = connector.getBinds();
 		for(CarrierSmppBind bind: binds)

@@ -30,6 +30,9 @@ public class BindExecutor {
 			
 			bindPool.shutdownNow();
 			logger.info("shutdown finished.");
+			
+			logger.info("pool is terminated: {} and shutdown: {}",bindPool.isTerminated(), bindPool.isShutdown());
+			
 
 		}
 
