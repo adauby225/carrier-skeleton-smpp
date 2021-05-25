@@ -99,11 +99,9 @@ public class SmppOutbound {
 	public void disconnect() throws InterruptedException {
 		bindManager.unbind();
 		respThreadPool.shutdown();
-		respThreadPool.awaitTermination(5, TimeUnit.SECONDS);
-		logger.info("resThreadPool is terminated {} and shutdown {}",respThreadPool.isTerminated(), respThreadPool.isShutdown());
-		respThreadPool.shutdownNow();
-		logger.info("resThreadPool is shutdown now {}", respThreadPool.isShutdown());
-		
+		respThreadPool.awaitTermination(7, TimeUnit.SECONDS);
+		if(!respThreadPool.isShutdown())
+			respThreadPool.shutdownNow();
 	}
 
 	public List<CarrierSmppBind> getBinds() {

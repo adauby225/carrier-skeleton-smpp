@@ -90,7 +90,7 @@ public class CarrierSmppBind implements Runnable{
 				logger.error(e);
 			}finally {
 				logger.info("{} trying pause", config.getName().concat("-"+config.getType().toString()));
-				if(!unbound && reqDispatcher.sizeOfRequests()>0) 
+				if(!unbound && reqDispatcher.sizeOfRequests()==0) 
 					ThreadUtil.sleep(enquireLinkInterval);
 			}
 			if(unbound) 

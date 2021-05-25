@@ -20,6 +20,7 @@ public class RequestStack extends RequestCollection {
 	public PduRequest nextRequest() {
 		PduRequest request=null;
 		try {
+			if(isEmpty()) return request;
 			request = stack.pop();
 		}catch(Exception e) {
 			logger.error(e);

@@ -50,7 +50,7 @@ public class RequestCollections implements  RequestManager{
 			RequestCollection collection = node.getValue();
 			requests  = requests + collection.size();
 		}
-		readLock.lock();
+		readLock.unlock();
 		return requests;
 	}
 	
