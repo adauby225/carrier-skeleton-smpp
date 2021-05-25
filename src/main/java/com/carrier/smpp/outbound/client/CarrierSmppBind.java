@@ -86,8 +86,8 @@ public class CarrierSmppBind implements Runnable{
 				currentThread.interrupt();
 				destroySession();
 
-			}catch(Exception e) {
-				logger.error(e);
+			/*}catch(Exception e) {
+				logger.error(e);*/
 			}finally {
 				logger.info("{} trying pause", config.getName().concat("-"+config.getType().toString()));
 				if(!unbound && reqDispatcher.sizeOfRequests()==0) 

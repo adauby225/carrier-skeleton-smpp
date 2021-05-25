@@ -71,16 +71,16 @@ public class SmppClient {
 				,pduRequestSender, maxTps,reqHandlers,respHandlers, new RequestCollections());
 		String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
 		byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
-			SubmitSm sms = new SubmitSm();
-			Address sourceAddress = new Address();
-			Address destAddress = new Address();
-			sourceAddress.setAddress("SENDER");
-			destAddress.setAddress("22544404040");
-			sms.setSourceAddress(sourceAddress);
-			sms.setDestAddress(destAddress);
-			sms.setShortMessage(textBytes);
-			sms.setRegisteredDelivery((byte)0);
-			connector.addRequest(sms);
+		SubmitSm sms = new SubmitSm();
+		Address sourceAddress = new Address();
+		Address destAddress = new Address();
+		sourceAddress.setAddress("SENDER");
+		destAddress.setAddress("22544404040");
+		sms.setSourceAddress(sourceAddress);
+		sms.setDestAddress(destAddress);
+		sms.setShortMessage(textBytes);
+		sms.setRegisteredDelivery((byte)0);
+		connector.addRequest(sms);
 		connector.connect();
 		List<CarrierSmppBind>binds = connector.getBinds();
 		for(CarrierSmppBind bind: binds)
@@ -117,22 +117,27 @@ class PduRequestSender implements RequestSender{
 	public boolean sendMessage(SmppSession session, long maxToSend
 			,boolean canSend,RequestManager reqDispatcher) throws UnrecoverablePduException, SmppChannelException,InterruptedException {
 		Optional<PduRequest> asynchronSubmit=Optional.empty();
+		PduRequest request=null;
 		boolean submited=false;
 		try {
 			if(canSend && reqDispatcher.sizeOfRequests()>0) {
 				if(maxToSend > reqDispatcher.sizeOfRequests())
 					maxToSend = reqDispatcher.sizeOfRequests();
+
 				for(int i=0 ;i<maxToSend;i++) {
 					asynchronSubmit = reqDispatcher.nextRequest();
-					session.sendRequestPdu(asynchronSubmit.get(),session.getConfiguration().getRequestExpiryTimeout(), false);				
-					logger.info(asynchronSubmit);	
+					if(asynchronSubmit.isPresent()) {
+						request = asynchronSubmit.get();
+						session.sendRequestPdu(request,session.getConfiguration().getRequestExpiryTimeout(), false);				
+						logger.info(request);	
+					}
 				}
 				submited=true;
 			}
 		}catch( RecoverablePduException | SmppTimeoutException e) {
 			logger.error(e);
 		}finally {
-			if(!submited && asynchronSubmit.isPresent())
+			if(!submited && request!=null)
 				reqDispatcher.addRequest(asynchronSubmit.get());
 		}
 
