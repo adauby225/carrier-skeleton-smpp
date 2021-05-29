@@ -42,6 +42,7 @@ public class CarrierSmppBind implements Runnable{
 	private final Map<Integer, RequestHandler<PduRequest,PduResponse>> smscReqHandlers;
 	private final ResponseHandler<PduAsyncResponse> asyncHandler;
 	private DefaultSmppSessionHandler sessionHandler=null;
+	private int sleep = 1000;
 	public CarrierSmppBind(RequestManager reqDispatcher, SmppSessionConfiguration config, RequestSender requestSender
 			,RequestSender enquireLinkSender,Map<Integer, RequestHandler<PduRequest,PduResponse>> smscReqHandlers
 			,ResponseHandler<PduAsyncResponse> asyncHandler,int tps) {
@@ -63,14 +64,10 @@ public class CarrierSmppBind implements Runnable{
 
 	@Override
 	public void run() {
-		logger.info("inside bind {}", config.getName().concat("-"+config.getType().toString()));
 		while(!unbound) {
 			try {
-				logger.info("{} trying to send request(s)", config.getName().concat("-"+config.getType().toString()));
 				if(session != null && session.isBound()) {
-					logger.info("{} trying to send submit_sm(s)", config.getName().concat("-"+config.getType().toString()));
 					requestSender.send(session, reqDispatcher, tps);
-					logger.info("{} sending enquire_link", config.getName().concat("-"+config.getType().toString()));
 					enquireLinkSender.send(session,enquireLinkInterval);
 				}else reconnect();
 
@@ -79,25 +76,24 @@ public class CarrierSmppBind implements Runnable{
 				logger.warn("Unable to connect: " + e.getMessage() + " " + LoggingUtil.toString(config, false));
 				logger.debug("", e);
 				destroySession();
-				
+				sleep = enquireLinkInterval;
 			}catch(InterruptedException e) {
 				logger.error("[connection failure]" + e);
 				Thread currentThread = Thread.currentThread();
 				currentThread.interrupt();
 				destroySession();
-
-			/*}catch(Exception e) {
-				logger.error(e);*/
+				sleep = enquireLinkInterval;
+			}catch(Exception e) {
+				logger.error(e);
 			}finally {
-				logger.info("{} trying pause", config.getName().concat("-"+config.getType().toString()));
 				if(!unbound && reqDispatcher.sizeOfRequests()==0) 
-					ThreadUtil.sleep(enquireLinkInterval);
+					ThreadUtil.sleep(sleep);
+				sleep = 1000;
 			}
 			if(unbound) 
 				break;
 			
 		}
-		logger.info("{} Stopping", config.getName());
 		logger.info(UNBINDING);
 		unbind();
 	}
