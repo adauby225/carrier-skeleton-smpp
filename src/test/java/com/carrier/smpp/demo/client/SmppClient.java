@@ -56,11 +56,17 @@ public class SmppClient {
 		//map request form smsc
 		Map<Integer, RequestHandler<PduRequest, PduResponse>>reqHandlers = new HashMap<>();
 		reqHandlers.put(SmppConstants.CMD_ID_DELIVER_SM, new deliverSmHandler());
-		settings.setWindowSize(1);
-		settings.setName("test.carrier.0");
+		settings.setWindowSize(100);
+		/*settings.setName("test.carrier.0");
 		settings.setHost("localhost");
-		settings.setRemotePort(34568);
-		settings.setThroughput(100);
+		settings.setRemotePort(34568);*/
+		settings.setName("test.carrier.0");
+		settings.setHost("154.68.5.50");
+		settings.setRemoteHost("test.arolitec.com");
+		settings.setRemotePort(2775);
+		settings.setLogin("9BB3F263");
+		settings.setPassword("8FA1009B");
+		settings.setThroughput(100000);
 
 
 		BindTypes bindTypes = new BindTypes(0,1,1);
@@ -71,16 +77,20 @@ public class SmppClient {
 				,pduRequestSender, maxTps,reqHandlers,respHandlers, new RequestCollections());
 		String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
 		byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
-		SubmitSm sms = new SubmitSm();
-		Address sourceAddress = new Address();
-		Address destAddress = new Address();
-		sourceAddress.setAddress("SENDER");
-		destAddress.setAddress("22544404040");
-		sms.setSourceAddress(sourceAddress);
-		sms.setDestAddress(destAddress);
-		sms.setShortMessage(textBytes);
-		sms.setRegisteredDelivery((byte)0);
-		connector.addRequest(sms);
+		for(int i=0;i<1000000;i++) {
+			SubmitSm sms = new SubmitSm();
+			Address sourceAddress = new Address();
+			Address destAddress = new Address();
+			/*sourceAddress.setAddress("SENDER");
+		destAddress.setAddress("22544404040");*/
+			sourceAddress.setAddress("AROLIGROUP");
+			destAddress.setAddress("2250144419304");
+			sms.setSourceAddress(sourceAddress);
+			sms.setDestAddress(destAddress);
+			sms.setShortMessage(textBytes);
+			sms.setRegisteredDelivery((byte)0);
+			connector.addRequest(sms);
+		}
 		connector.connect();
 		List<CarrierSmppBind>binds = connector.getBinds();
 		for(CarrierSmppBind bind: binds)
