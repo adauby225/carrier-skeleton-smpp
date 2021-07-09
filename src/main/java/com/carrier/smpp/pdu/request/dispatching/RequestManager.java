@@ -5,8 +5,11 @@ import java.util.Optional;
 import com.cloudhopper.smpp.pdu.PduRequest;
 
 public interface RequestManager {
-
+	
 	public void addRequest(PduRequest request) ;
 	public Optional<PduRequest> nextRequest();
 	public long sizeOfRequests();
+	public boolean isCollectionOpen();
+	public void openCollection();
+	public void closeCollection();
 }

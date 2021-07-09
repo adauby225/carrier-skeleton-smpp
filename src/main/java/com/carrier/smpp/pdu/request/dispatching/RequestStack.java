@@ -6,14 +6,13 @@ import com.cloudhopper.smpp.pdu.PduRequest;
 
 public class RequestStack extends RequestCollection {
 	private Stack<PduRequest> stack = new Stack();
-	
+
 	public RequestStack() {
 		super(RequestStack.class.getName());
 	}
 	@Override
 	public void addRequest(PduRequest request) {
 		stack.push(request);
-
 	}
 
 	@Override

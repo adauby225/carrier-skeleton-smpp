@@ -7,7 +7,6 @@ import com.cloudhopper.smpp.pdu.PduRequest;
 
 public abstract class RequestCollection {
 	protected final Logger logger ; 
-	
 	public RequestCollection(String loggerName) {
 		logger = LogManager.getLogger(loggerName);
 	}
