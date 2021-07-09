@@ -29,7 +29,7 @@ public class SmppOutbound {
 	private final Logger logger = LogManager.getLogger(SmppOutbound.class.getName());
 	private OutBoundConfiguration connectorConfig;
 	private OutboundSmppBindManager bindManager;
-	private RequestManager reqDispatcher ;
+	protected RequestManager reqDispatcher;
 	private Map<Long, CarrierSmppBind>binds=new HashMap<>();
 	private final MaxRequestPerSecond maxReqPerSecond;
 	private ThreadPoolExecutor respThreadPool = getNewCachedPool();
