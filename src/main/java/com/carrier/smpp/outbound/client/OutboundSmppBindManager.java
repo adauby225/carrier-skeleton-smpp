@@ -8,12 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 import com.carrier.smpp.executor.ServiceExecutor;
 import com.carrier.smpp.handler.pdu.request.RequestHandler;
 import com.carrier.smpp.handler.pdu.response.ResponseHandler;
 import com.carrier.smpp.pdu.request.dispatching.RequestManager;
-import com.carrier.smpp.pdu.request.dispatching.RequestQueue;
 import com.carrier.smpp.util.Messages;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppBindType;
@@ -27,7 +25,6 @@ public class OutboundSmppBindManager implements Connection<OutBoundConfiguration
 	private Map<Long, CarrierSmppBind> binds;
 	private final RequestSender requestSender;
 	private final Map<Integer, RequestHandler<PduRequest, PduResponse>> smscReqHandlers;
-	//private final Map<Integer, ResponseHandler> smscResponseHandlers;
 	private final ResponseHandler<PduAsyncResponse>asyncRespHandler;
 	public OutboundSmppBindManager(Map<Long, CarrierSmppBind> binds, ServiceExecutor serviceExecutor
 			, RequestSender requestSender, Map<Integer, RequestHandler<PduRequest, PduResponse>> smscReqHandlers
