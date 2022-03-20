@@ -53,8 +53,8 @@ public class OutboundSmppBindManager implements Connection<OutBoundConfiguration
 		config.setHost(connectorConfig.getRemoteHost());
 		config.setPort(connectorConfig.getRemotePort());
 		config.setWindowSize(connectorConfig.getWindowSize());
-		config.setRequestExpiryTimeout(DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT);
-		config.setWindowMonitorInterval(DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT);
+		config.setRequestExpiryTimeout(connectorConfig.getRequestExpiryTimeout());
+		config.setWindowMonitorInterval(connectorConfig.getWindowMonitorInterval());
 		config.setCountersEnabled(true);
 		config.getLoggingOptions().setLogBytes(false);
 		config.getLoggingOptions().setLogPdu(false);

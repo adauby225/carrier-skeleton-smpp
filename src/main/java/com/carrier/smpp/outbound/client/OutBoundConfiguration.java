@@ -2,6 +2,7 @@ package com.carrier.smpp.outbound.client;
 
 import static com.cloudhopper.smpp.SmppConstants.DEFAULT_WINDOW_SIZE;
 
+import com.carrier.smpp.util.Values;
 import com.cloudhopper.smpp.SmppConstants;
 
 public class OutBoundConfiguration{
@@ -24,6 +25,8 @@ public class OutBoundConfiguration{
 	private byte smppVersion = SmppConstants.VERSION_3_4;
 	private String systemType;
 	private BindTypes bindTypes=new BindTypes();
+	private long requestExpiryTimeout = Values.DEFAULT_CARRIER_REQUEST_EXPIRY_TIMEOUT;
+	private long windowMonitorInterval = Values.DEFAULT_CARRIER_WINDOW_MONITOR_TIMEOUT;
 	
 	public OutBoundConfiguration() {}
 	public OutBoundConfiguration(String name,String login, String password, String remoteHost
@@ -159,6 +162,21 @@ public class OutBoundConfiguration{
 	}
 	public void setBindTypes(BindTypes bindTypes) {
 		this.bindTypes = bindTypes;
+	}
+	
+	public long getRequestExpiryTimeout() {
+		return requestExpiryTimeout;
+	}
+	public void setRequestExpiryTimeout(long requestExpiryTimeout) {
+		this.requestExpiryTimeout = requestExpiryTimeout;
+	}
+	
+	
+	public long getWindowMonitorInterval() {
+		return windowMonitorInterval;
+	}
+	public void setWindowMonitorInterval(long windowMonitorInterval) {
+		this.windowMonitorInterval = windowMonitorInterval;
 	}
 	public void updateBindTypes(BindTypes bindTypes) {
 		this.bindTypes.update(bindTypes);
